@@ -66,12 +66,12 @@ kemunculan. Setiap anchor (foto) menampilkan bandul yang sama.
 Diatur lewat atribut di `index.html`, contoh:
 
 ```html
-<a-entity pendulum-lab="length: 0.40; amplitudeDeg: 32; gravity: 9.8"></a-entity>
+<a-entity pendulum-lab="mode: abc; amplitudeDeg: 32; gravity: 9.8"></a-entity>
 ```
 
 | Parameter | Default | Arti |
 |---|---|---|
-| `length` | `0.40` | Panjang tali L (**meter**) — memengaruhi periode & posisi A/C. Panjang di layar = `L × UNITS_PER_M` |
+| `mode` | `abc` | Demo: `abc` gerak A-B-C, `wave` Gelombang Bandul, `cradle` Ayunan Newton. Diganti runtime via `setMode()` dari mode bar |
 | `gravity` | `9.8` | Percepatan gravitasi g (m/s²) — memengaruhi periode |
 | `amplitudeDeg` | `32` | Simpangan sudut ke posisi A (kiri) & C (kanan), derajat |
 | `lift` | `0.06` | Tinggi melayang di atas marker |

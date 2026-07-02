@@ -44,6 +44,17 @@ melewatinya, dan panel angka menampilkan live posisi, sudut θ, panjang tali L, 
 periode `T = 2π√(L/g)`. Tombol **?** di layar menampilkan penjelasan lengkap gerak A–B–C
 (berguna saat presentasi).
 
+## Tiga mode demo (ganti saat AR live)
+
+| Mode | Materi | Yang ditampilkan |
+|---|---|---|
+| **Gerak A–B–C** | Bandul sederhana / GHS | Satu bandul berayun; posisi A (kiri) · B (tengah) · C (kanan), readout θ/L/T |
+| **Gelombang Bandul** | Superposisi & fase | 9 bandul beda panjang → periode beda → pola merambat & bergantian (pendulum wave) |
+| **Ayunan Newton** | Kekekalan momentum & energi | Deret bola, tumbukan lenting; bola ujung memantul bergantian |
+
+Saat AR: **putar objek dengan 1 jari**, **zoom dengan 2 jari**, tombol **Reset 3D**, HUD penjelasan
+on-screen, dan panel **📖 Penjelasan** berisi 7 tab materi. Bisa dipakai **tegak maupun landscape**.
+
 ## Cara pakai
 
 1. **Cetak marker**: bisa **beberapa foto sekaligus** (mis. `media/marker-bandul.png`,
