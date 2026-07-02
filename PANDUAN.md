@@ -18,12 +18,15 @@ MindAR butuh berkas `targets.mind` (hasil kompilasi gambar marker). **Satu berka
 5. Buka `index.html`, samakan **`TARGET_COUNT`** (di dalam `<script>`) dengan **jumlah foto**
    yang kamu compile. Saat ini `TARGET_COUNT = 6` (bandul-1..4 + marker + bandul-5).
 
-> ⚠️ **Perlu di-compile ulang:** `targets.mind` yang sekarang masih berisi 5 foto. Setelah
-> menambah `bandul-5.png`, ulangi langkah di atas dengan **6 foto** agar diagram A/B/C juga
-> bisa dipindai. (Sebelum di-compile ulang, foto ke-6 tidak akan terdeteksi — tidak error.)
+> ✅ **Status:** `targets.mind` sekarang sudah berisi **6 foto** (bandul-1..4 + marker + bandul-5),
+> jadi keenamnya bisa dipindai. Ulangi langkah di atas hanya bila kamu mengganti/menambah foto lagi.
 >
 > Semua foto menampilkan bandul A–B–C yang sama. Jadi urutan foto tidak masalah — yang
-> penting jumlahnya cocok dengan `TARGET_COUNT`.
+> penting jumlahnya cocok dengan `TARGET_COUNT` (=6).
+>
+> Catatan: `bandul-5.png` adalah **diagram** (banyak bidang putih polos) sehingga fitur untuk
+> pelacakan lebih sedikit → tracking-nya bisa kurang stabil dibanding foto alat asli. Untuk hasil
+> paling mantap saat presentasi, utamakan memindai foto alat (`bandul-1..4` / `marker-bandul`).
 >
 > Tips marker bagus: kaya tekstur & kontras tinggi (compiler menampilkan skor tiap gambar).
 > Cetak jelas, hindari pantulan cahaya saat dipindai. Foto yang bidangnya polos/kurang detail
