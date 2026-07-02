@@ -47,7 +47,7 @@ periode `T = 2π√(L/g)`. Tombol **?** di layar menampilkan penjelasan lengkap 
 ## Cara pakai
 
 1. **Cetak marker**: bisa **beberapa foto sekaligus** (mis. `media/marker-bandul.png`,
-   `media/bandul-1..4.png`, dan diagram `media/bandul-5.png`) — semuanya bisa dipindai.
+   `media/bandul-1..4.png`, dan diagram `media/bandul-5.png` / `media/bandul-6.png`) — semuanya bisa dipindai.
    Cetak di kertas / tempel di karton.
 2. Buka situs ini di **browser HP** (Chrome/Safari), izinkan akses kamera.
 3. Tekan **Mulai** di menu pembuka → arahkan kamera ke **salah satu foto** → bandul 3D muncul di atasnya.
@@ -77,7 +77,7 @@ Periode **tidak** bergantung pada massa beban maupun (untuk sudut kecil) besar s
 ```
 chensqy/
 ├── index.html        UI: menu Mulai, panel penjelasan (?), scene A-Frame + MindAR
-├── targets.mind      Target image-tracking (6 foto hasil kompilasi) — lihat PANDUAN.md
+├── targets.mind      Target image-tracking (7 foto hasil kompilasi) — lihat PANDUAN.md
 ├── CNAME             Domain kustom: chensqy.my.id
 ├── 404.html          Halaman 404
 ├── .nojekyll         Nonaktifkan Jekyll (GitHub Pages)
@@ -85,7 +85,7 @@ chensqy/
 │   └── pendulum.js   Komponen <a-entity pendulum-lab>: rangka + bandul 3D berayun, posisi A/B/C, fisika, label
 ├── assets/           Ikon situs + logo + gambar pratinjau (favicon, logo, og-image)
 ├── vendor/           A-Frame + MindAR (self-hosted)
-└── media/            Bahan cetak marker: marker-bandul.png + bandul-1..4.png + bandul-5.png (diagram A/B/C)
+└── media/            Bahan cetak marker: marker-bandul.png + bandul-1..4.png + bandul-5/6.png (diagram A/B/C)
 ```
 
 ## Deploy & domain

@@ -11,22 +11,23 @@ MindAR butuh berkas `targets.mind` (hasil kompilasi gambar marker). **Satu berka
 1. Buka **MindAR Image Targets Compiler**:
    https://hiukim.github.io/mind-ar-js-doc/tools/compile
 2. **Upload SEMUA foto** yang ingin bisa dipindai sekaligus (mis. `media/bandul-1..4.png`
-   + `media/marker-bandul.png` + `media/bandul-5.png`). Urutan upload = urutan `targetIndex`.
+   + `media/marker-bandul.png` + `media/bandul-5.png` + `media/bandul-6.png`). Urutan upload = urutan `targetIndex`.
 3. Klik **Start**, tunggu selesai, lalu **Download** hasilnya.
 4. Ganti nama menjadi `targets.mind` dan taruh di folder ini (sejajar `index.html`),
    menimpa yang lama.
 5. Buka `index.html`, samakan **`TARGET_COUNT`** (di dalam `<script>`) dengan **jumlah foto**
-   yang kamu compile. Saat ini `TARGET_COUNT = 6` (bandul-1..4 + marker + bandul-5).
+   yang kamu compile. Saat ini `TARGET_COUNT = 7` (bandul-1..4 + marker + bandul-5 + bandul-6).
 
-> ✅ **Status:** `targets.mind` sekarang sudah berisi **6 foto** (bandul-1..4 + marker + bandul-5),
-> jadi keenamnya bisa dipindai. Ulangi langkah di atas hanya bila kamu mengganti/menambah foto lagi.
+> ✅ **Status:** `targets.mind` sekarang sudah berisi **7 foto** (bandul-1..4 + marker + bandul-5 + bandul-6),
+> jadi ketujuhnya bisa dipindai. Ulangi langkah di atas hanya bila kamu mengganti/menambah foto lagi.
 >
 > Semua foto menampilkan bandul A–B–C yang sama. Jadi urutan foto tidak masalah — yang
-> penting jumlahnya cocok dengan `TARGET_COUNT` (=6).
+> penting jumlahnya cocok dengan `TARGET_COUNT` (=7).
 >
-> Catatan: `bandul-5.png` adalah **diagram** (banyak bidang putih polos) sehingga fitur untuk
-> pelacakan lebih sedikit → tracking-nya bisa kurang stabil dibanding foto alat asli. Untuk hasil
-> paling mantap saat presentasi, utamakan memindai foto alat (`bandul-1..4` / `marker-bandul`).
+> Catatan: `bandul-5.png` & `bandul-6.png` adalah **diagram**. `bandul-6` bergaris lebih tegas
+> (tali solid + arsir) sehingga fiturnya lebih banyak → **lebih stabil** dari `bandul-5` yang
+> bidangnya lebih polos. Untuk hasil paling mantap tetap utamakan foto alat asli
+> (`bandul-1..4` / `marker-bandul`).
 >
 > Tips marker bagus: kaya tekstur & kontras tinggi (compiler menampilkan skor tiap gambar).
 > Cetak jelas, hindari pantulan cahaya saat dipindai. Foto yang bidangnya polos/kurang detail
@@ -50,7 +51,7 @@ Buka URL `https://...` dari tunnel di HP. Desktop tanpa webcam hanya menampilkan
 ```
 index.html     Menu Mulai, panel penjelasan (?), scene A-Frame + MindAR, pencahayaan
 js/pendulum.js Komponen <a-entity pendulum-lab> (bandul A/B/C)
-targets.mind   Target image-tracking 6 foto (buat sendiri, lihat bagian 1)
+targets.mind   Target image-tracking 7 foto (buat sendiri, lihat bagian 1)
 assets/        Ikon + logo + og-image
 vendor/        A-Frame + MindAR (self-hosted)
 media/         Bahan cetak marker
