@@ -11,15 +11,19 @@ MindAR butuh berkas `targets.mind` (hasil kompilasi gambar marker). **Satu berka
 1. Buka **MindAR Image Targets Compiler**:
    https://hiukim.github.io/mind-ar-js-doc/tools/compile
 2. **Upload SEMUA foto** yang ingin bisa dipindai sekaligus (mis. `media/bandul-1..4.png`
-   + `media/marker-bandul.png`). Urutan upload = urutan `targetIndex`.
+   + `media/marker-bandul.png` + `media/bandul-5.png`). Urutan upload = urutan `targetIndex`.
 3. Klik **Start**, tunggu selesai, lalu **Download** hasilnya.
 4. Ganti nama menjadi `targets.mind` dan taruh di folder ini (sejajar `index.html`),
    menimpa yang lama.
 5. Buka `index.html`, samakan **`TARGET_COUNT`** (di dalam `<script>`) dengan **jumlah foto**
-   yang kamu compile. Saat ini `TARGET_COUNT = 5`.
+   yang kamu compile. Saat ini `TARGET_COUNT = 6` (bandul-1..4 + marker + bandul-5).
 
-> Semua foto menampilkan bandul yang sama, mengikuti tombol mode. Jadi urutan foto
-> tidak masalah — yang penting jumlahnya cocok dengan `TARGET_COUNT`.
+> ⚠️ **Perlu di-compile ulang:** `targets.mind` yang sekarang masih berisi 5 foto. Setelah
+> menambah `bandul-5.png`, ulangi langkah di atas dengan **6 foto** agar diagram A/B/C juga
+> bisa dipindai. (Sebelum di-compile ulang, foto ke-6 tidak akan terdeteksi — tidak error.)
+>
+> Semua foto menampilkan bandul A–B–C yang sama. Jadi urutan foto tidak masalah — yang
+> penting jumlahnya cocok dengan `TARGET_COUNT`.
 >
 > Tips marker bagus: kaya tekstur & kontras tinggi (compiler menampilkan skor tiap gambar).
 > Cetak jelas, hindari pantulan cahaya saat dipindai. Foto yang bidangnya polos/kurang detail
@@ -41,36 +45,36 @@ Buka URL `https://...` dari tunnel di HP. Desktop tanpa webcam hanya menampilkan
 ## 3. Arsitektur singkat
 
 ```
-index.html     Menu, tombol mode, panel penjelasan (?), scene A-Frame + MindAR, pencahayaan
-js/pendulum.js Komponen <a-entity pendulum-lab>
-targets.mind   Target image-tracking 5 foto (buat sendiri, lihat bagian 1)
+index.html     Menu Mulai, panel penjelasan (?), scene A-Frame + MindAR, pencahayaan
+js/pendulum.js Komponen <a-entity pendulum-lab> (bandul A/B/C)
+targets.mind   Target image-tracking 6 foto (buat sendiri, lihat bagian 1)
 assets/        Ikon + logo + og-image
 vendor/        A-Frame + MindAR (self-hosted)
 media/         Bahan cetak marker
 ```
 
-Alur: pilih materi di menu → kamera AR dinyalakan → MindAR mengenali marker →
-komponen `pendulum-lab` menampilkan bandul 3D. Ganti mode memicu `setMode()` →
-scene dibangun ulang dengan animasi kemunculan.
+Alur: tekan **Mulai** di menu → kamera AR dinyalakan → MindAR mengenali marker →
+komponen `pendulum-lab` menampilkan **satu bandul** yang berayun A→B→C dengan animasi
+kemunculan. Setiap anchor (foto) menampilkan bandul yang sama.
 
 ### Parameter komponen `pendulum-lab`
 
 Diatur lewat atribut di `index.html`, contoh:
 
 ```html
-<a-entity pendulum-lab="mode: A; amplitudeDeg: 20; gravity: 9.8"></a-entity>
+<a-entity pendulum-lab="length: 0.40; amplitudeDeg: 32; gravity: 9.8"></a-entity>
 ```
 
 | Parameter | Default | Arti |
 |---|---|---|
-| `mode` | `A` | Materi awal: `A` bandul tunggal, `B` pengaruh panjang tali, `C` energi |
+| `length` | `0.40` | Panjang tali L (**meter**) — memengaruhi periode & posisi A/C. Panjang di layar = `L × UNITS_PER_M` |
 | `gravity` | `9.8` | Percepatan gravitasi g (m/s²) — memengaruhi periode |
-| `amplitudeDeg` | `20` | Simpangan sudut awal (derajat) |
+| `amplitudeDeg` | `32` | Simpangan sudut ke posisi A (kiri) & C (kanan), derajat |
 | `lift` | `0.06` | Tinggi melayang di atas marker |
-| `showLabels` | `true` | Tampilkan judul, rumus, dan label nilai |
+| `showLabels` | `true` | Tampilkan judul, rumus, label A/B/C, dan panel angka |
 
-Panjang tali tiap mode diatur di `_modeConfig()` dalam `pendulum.js` (dalam **meter**;
-panjang di layar = `L × UNITS_PER_M`).
+Fisika: `theta(t) = amplitudeDeg·cos(ωt)`, `ω = √(g/L)`, sehingga `T = 2π√(L/g)`.
+Posisi A = −amplitudeDeg (kiri), B = 0 (tengah), C = +amplitudeDeg (kanan).
 
 ## 4. Deploy — sudah LIVE
 

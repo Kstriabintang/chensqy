@@ -28,22 +28,29 @@ yang **berayun sesuai fisika sungguhan** di atas kartu. Panjang tali di layar
 sebanding dengan panjang tali sebenarnya (dalam meter), sehingga periode ayunan yang
 terlihat konsisten dengan rumus yang ditampilkan.
 
-## Fitur — 3 mode
+## Konsep — gerak A · B · C
 
-| Mode | Materi | Yang ditunjukkan |
+Sesuai diagram penelitian: **satu bandul berayun** bolak-balik melewati tiga posisi
+yang diberi label langsung di objek 3D:
+
+| Posisi | Letak | Yang terjadi |
 |---|---|---|
-| **A** | Bandul Tunggal | Satu bandul berayun; tampil live sudut simpangan θ, panjang tali L, dan periode `T = 2π√(L/g)` |
-| **B** | Pengaruh Panjang Tali | Tiga bandul beda panjang dilepas bersamaan → makin panjang makin lambat (`T ∝ √L`) |
-| **C** | Kekekalan Energi | Bar energi EP ⇄ EK berubah saat berayun; jumlah EP + EK tetap |
+| **A** | simpangan **kiri** | beban di titik terjauh kiri — sesaat berhenti, lalu berbalik |
+| **B** | **tengah / bawah** | titik setimbang (terendah) — beban bergerak **paling cepat** |
+| **C** | simpangan **kanan** | beban di titik terjauh kanan — sesaat berhenti, lalu berbalik |
 
-Tombol **?** di layar menampilkan penjelasan singkat tiap mode (berguna saat presentasi).
+Satu ayunan penuh = **A → B → C → B → A**. Label posisi **menyala** saat beban
+melewatinya, dan panel angka menampilkan live posisi, sudut θ, panjang tali L, serta
+periode `T = 2π√(L/g)`. Tombol **?** di layar menampilkan penjelasan lengkap gerak A–B–C
+(berguna saat presentasi).
 
 ## Cara pakai
 
-1. **Cetak marker**: bisa **beberapa foto sekaligus** (mis. `media/marker-bandul.png`
-   dan/atau `media/bandul-1..4.png`) — semuanya bisa dipindai. Cetak di kertas / tempel di karton.
+1. **Cetak marker**: bisa **beberapa foto sekaligus** (mis. `media/marker-bandul.png`,
+   `media/bandul-1..4.png`, dan diagram `media/bandul-5.png`) — semuanya bisa dipindai.
+   Cetak di kertas / tempel di karton.
 2. Buka situs ini di **browser HP** (Chrome/Safari), izinkan akses kamera.
-3. Pilih materi di menu pembuka → arahkan kamera ke **salah satu foto** → bandul 3D muncul di atasnya.
+3. Tekan **Mulai** di menu pembuka → arahkan kamera ke **salah satu foto** → bandul 3D muncul di atasnya.
 4. Gerakkan HP mengelilingi marker untuk melihat dari berbagai sudut.
 
 > Beberapa foto didukung sekaligus lewat **multi-marker** (satu `targets.mind` berisi banyak foto).
@@ -69,16 +76,16 @@ Periode **tidak** bergantung pada massa beban maupun (untuk sudut kecil) besar s
 
 ```
 chensqy/
-├── index.html        UI: menu, tombol mode, panel penjelasan (?), scene A-Frame + MindAR
-├── targets.mind      Target image-tracking (5 foto hasil kompilasi) — lihat PANDUAN.md
+├── index.html        UI: menu Mulai, panel penjelasan (?), scene A-Frame + MindAR
+├── targets.mind      Target image-tracking (6 foto hasil kompilasi) — lihat PANDUAN.md
 ├── CNAME             Domain kustom: chensqy.my.id
 ├── 404.html          Halaman 404
 ├── .nojekyll         Nonaktifkan Jekyll (GitHub Pages)
 ├── js/
-│   └── pendulum.js   Komponen <a-entity pendulum-lab>: rangka + bandul 3D, fisika, label, mode A/B/C
+│   └── pendulum.js   Komponen <a-entity pendulum-lab>: rangka + bandul 3D berayun, posisi A/B/C, fisika, label
 ├── assets/           Ikon situs + logo + gambar pratinjau (favicon, logo, og-image)
 ├── vendor/           A-Frame + MindAR (self-hosted)
-└── media/            Bahan cetak marker: marker-bandul.png + bandul-1..4.png (foto sumber)
+└── media/            Bahan cetak marker: marker-bandul.png + bandul-1..4.png + bandul-5.png (diagram A/B/C)
 ```
 
 ## Deploy & domain

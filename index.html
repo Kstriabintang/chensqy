@@ -143,26 +143,17 @@
   <div id="welcome">
     <div class="card">
       <h1>🕰️ AR Bandul Sederhana</h1>
-      <p class="sub">Media pembelajaran Augmented Reality. Pilih materi untuk memulai, lalu arahkan kamera ke marker <b>Bandul Sederhana</b> yang tercetak.</p>
+      <p class="sub">Media pembelajaran Augmented Reality. Menampilkan <b>satu bandul berayun</b> melewati tiga posisi: <b>A</b> (kiri), <b>B</b> (tengah), <b>C</b> (kanan) — sesuai diagram penelitian.</p>
       <div class="choices">
-        <button data-mode="A"><b>Bandul Tunggal</b><span>Ayunan satu bandul — sudut θ, panjang L, periode T live</span></button>
-        <button data-mode="B"><b>Pengaruh Panjang Tali</b><span>Tiga bandul beda panjang: makin panjang, makin lambat (T ∝ √L)</span></button>
-        <button data-mode="C"><b>Kekekalan Energi</b><span>Perubahan energi potensial ⇄ kinetik saat berayun</span></button>
+        <button id="startBtn"><b>Mulai — Buka Kamera</b><span>Arahkan kamera ke marker Bandul yang tercetak</span></button>
       </div>
-      <div class="hint">Mode bisa diganti kapan saja lewat tombol di atas layar. Tekan tombol <b>?</b> untuk penjelasan.</div>
+      <div class="hint">Tekan tombol <b>?</b> kapan saja untuk penjelasan gerak A–B–C.</div>
     </div>
   </div>
 
   <div class="scan-hint" id="scanHint">
     <div class="box"></div>
     <div>Arahkan kamera ke <b>marker Bandul</b> yang tercetak</div>
-  </div>
-
-  <div id="modebar">
-    <div class="title">Pilih materi</div>
-    <button data-mode="A" class="active">Bandul Tunggal</button>
-    <button data-mode="B">Panjang Tali</button>
-    <button data-mode="C">Energi</button>
   </div>
 
   <button id="helpBtn" title="Penjelasan">?</button>
@@ -177,7 +168,7 @@
   </div>
 
   <div id="info">
-    Bandul melayang di atas marker — <b>gerakkan HP</b> mengelilinginya untuk melihat 3D
+    Bandul berayun <b>A → B → C</b> di atas marker — <b>gerakkan HP</b> mengelilinginya untuk melihat 3D
   </div>
 
   <a-scene
@@ -205,19 +196,18 @@
   <script>
     const sceneEl = document.querySelector('a-scene');
     const hint = document.getElementById('scanHint');
-    const modebar = document.getElementById('modebar');
     const welcome = document.getElementById('welcome');
 
     // ---- Multi-marker: satu anchor per foto yang dikompilasi ke targets.mind ----
     // targetIndex = urutan foto saat di-compile. Ubah angka ini bila menambah/
-    // mengurangi foto (semua foto menampilkan bandul yang sama, ikut tombol mode).
-    const TARGET_COUNT = 5;
+    // mengurangi foto (semua foto menampilkan bandul A-B-C yang sama).
+    const TARGET_COUNT = 6;
     let foundCount = 0;
     for (let i = 0; i < TARGET_COUNT; i++) {
       const anchor = document.createElement('a-entity');
       anchor.setAttribute('mindar-image-target', 'targetIndex: ' + i);
       const lab = document.createElement('a-entity');
-      lab.setAttribute('pendulum-lab', 'mode: A');
+      lab.setAttribute('pendulum-lab', '');
       anchor.appendChild(lab);
       sceneEl.appendChild(anchor);
       anchor.addEventListener('targetFound', () => { foundCount++; hint.classList.add('hidden'); });
@@ -227,71 +217,25 @@
       });
     }
 
-    // ---- Isi penjelasan per mode (untuk tombol ?) — gaya media ajar ----
+    // ---- Isi penjelasan (tombol ?) — gerak bandul A-B-C ----
     const EXPLAIN = {
-      A: {
-        title: 'Bandul Tunggal',
-        eq: 'T = 2π √(L / g)',
-        konsep: 'Bandul sederhana adalah sebuah beban bermassa <b>m</b> yang digantung pada tali ringan sepanjang <b>L</b>, lalu diayunkan. Untuk simpangan kecil (θ ≲ 15°), gerakannya adalah <b>Gerak Harmonik Sederhana (GHS)</b> — bolak-balik teratur dengan periode tetap. Gaya pemulihnya berasal dari komponen gaya berat, F = −mg·sin θ.',
-        vars: [
-          ['T', 'periode — waktu untuk satu ayunan penuh (sekon)'],
-          ['L', 'panjang tali (meter)'],
-          ['g', 'percepatan gravitasi ≈ 9,8 m/s²'],
-          ['θ', 'sudut simpangan terhadap posisi tegak']
-        ],
-        poin: [
-          'Periode <b>tidak bergantung pada massa</b> beban.',
-          'Untuk sudut kecil, periode juga <b>tidak bergantung pada besar simpangan</b>.',
-          'Frekuensi f = 1/T menyatakan jumlah ayunan tiap detik.'
-        ]
-      },
-      B: {
-        title: 'Pengaruh Panjang Tali',
-        eq: 'T ∝ √L',
-        konsep: 'Tiga bandul dengan panjang tali berbeda dilepas bersamaan dari sudut yang sama. Karena T = 2π√(L/g), tali yang <b>lebih panjang</b> memiliki periode <b>lebih besar</b>, sehingga berayun <b>lebih lambat</b>. Perhatikan ketiganya lama-kelamaan tidak lagi serempak.',
-        vars: [
-          ['L', 'panjang tali — makin besar, ayunan makin lambat'],
-          ['T', 'periode — sebanding dengan akar panjang tali']
-        ],
-        poin: [
-          'Panjang tali dijadikan 4× lipat → periode menjadi 2× (karena √4 = 2).',
-          'Massa dan sudut awal yang sama tidak membuat periodenya sama — yang menentukan adalah L.',
-          'Inilah dasar mengapa jam bandul memakai panjang tali tertentu agar periodenya tepat.'
-        ]
-      },
-      C: {
-        title: 'Kekekalan Energi',
-        eq: 'EM = EP + EK = tetap',
-        konsep: 'Selama berayun, energi berpindah bolak-balik antara <b>Energi Potensial (EP)</b> dan <b>Energi Kinetik (EK)</b>. EP maksimum di simpangan terjauh (bandul paling tinggi, sesaat diam), sedangkan EK maksimum di titik terendah (bandul paling cepat). Bila gesekan dan hambatan udara diabaikan, jumlah energi mekanik <b>EM = EP + EK selalu tetap</b>.',
-        vars: [
-          ['EP', 'energi potensial = m·g·h (bergantung ketinggian h)'],
-          ['EK', 'energi kinetik = ½·m·v² (bergantung kelajuan v)'],
-          ['EM', 'energi mekanik = EP + EK (kekal / tetap)']
-        ],
-        poin: [
-          'Di titik terendah: EP minimum, EK maksimum, kelajuan v paling besar.',
-          'Di simpangan terjauh: EK = 0, EP maksimum, bandul sesaat berhenti.',
-          'Pada bandul nyata, gesekan membuat ayunan mengecil (teredam) karena sebagian energi jadi panas.'
-        ]
-      }
+      title: 'Gerak Bandul A – B – C',
+      eq: 'T = 2π √(L / g)',
+      konsep: 'Bandul sederhana adalah sebuah beban bermassa <b>m</b> yang digantung pada tali ringan sepanjang <b>L</b>. Saat disimpangkan lalu dilepas, beban berayun bolak-balik melewati tiga posisi: <b>A</b> (simpangan kiri), <b>B</b> (titik tengah/terendah), dan <b>C</b> (simpangan kanan). Untuk simpangan kecil, gerak ini adalah <b>Gerak Harmonik Sederhana</b> dengan periode tetap.',
+      vars: [
+        ['A', 'simpangan terjauh KIRI — beban sesaat berhenti, lalu berbalik'],
+        ['B', 'titik TENGAH (terendah) — beban bergerak paling cepat'],
+        ['C', 'simpangan terjauh KANAN — beban sesaat berhenti, lalu berbalik'],
+        ['T', 'periode — waktu satu ayunan penuh A→C→A (sekon)'],
+        ['L', 'panjang tali (meter)'],
+        ['g', 'percepatan gravitasi ≈ 9,8 m/s²']
+      ],
+      poin: [
+        'Satu ayunan penuh = A → B → C → B → A.',
+        'Di A dan C kelajuan = 0 (beban sesaat diam); di B kelajuan maksimum.',
+        'Periode <b>tidak bergantung pada massa</b> beban, dan untuk sudut kecil tidak bergantung pada besar simpangan.'
+      ]
     };
-    let currentMode = 'A';
-
-    function applyMode(mode) {
-      currentMode = mode;
-      document.querySelectorAll('[pendulum-lab]').forEach((el) => {
-        const comp = el.components && el.components['pendulum-lab'];
-        if (comp) comp.setMode(mode);
-        else el.setAttribute('pendulum-lab', 'mode', mode);
-      });
-      [...modebar.querySelectorAll('button')].forEach((b) =>
-        b.classList.toggle('active', b.dataset.mode === mode));
-    }
-
-    modebar.addEventListener('click', (e) => {
-      const btn = e.target.closest('button');
-      if (btn) applyMode(btn.dataset.mode);
-    });
 
     // ---- Panel penjelasan ----
     const explain = document.getElementById('explain');
@@ -299,7 +243,7 @@
     const exEq = document.getElementById('exEq');
     const exBody = document.getElementById('exBody');
     document.getElementById('helpBtn').addEventListener('click', () => {
-      const d = EXPLAIN[currentMode];
+      const d = EXPLAIN;
       exTitle.textContent = d.title;
       exEq.textContent = d.eq;
       const vars = d.vars.map(([s, t]) => '<li><b>' + s + '</b> — ' + t + '</li>').join('');
@@ -313,17 +257,14 @@
     document.getElementById('exClose').addEventListener('click', () => explain.classList.remove('show'));
     explain.addEventListener('click', (e) => { if (e.target === explain) explain.classList.remove('show'); });
 
-    // Mulai kamera AR setelah user memilih materi
+    // Mulai kamera AR setelah user menekan tombol Mulai
     function startAR() {
       const sys = sceneEl.systems['mindar-image-system'];
       if (sceneEl.hasLoaded) sys.start();
       else sceneEl.addEventListener('loaded', () => sys.start(), { once: true });
     }
 
-    welcome.addEventListener('click', (e) => {
-      const btn = e.target.closest('button[data-mode]');
-      if (!btn) return;
-      applyMode(btn.dataset.mode);
+    document.getElementById('startBtn').addEventListener('click', () => {
       welcome.classList.add('hidden');
       setTimeout(() => { welcome.style.display = 'none'; }, 400);
       startAR();
