@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <title>AR Bandul Sederhana — Media Ajar WebAR 3D</title>
+  <meta name="description" content="Visualisasi gerak bandul sederhana (pendulum) 3D lewat Augmented Reality di browser HP. Periode T = 2π√(L/g), pengaruh panjang tali, dan kekekalan energi.">
+
+  <!-- Ikon situs -->
+  <link rel="icon" href="./assets/favicon.ico" sizes="16x16 32x32 48x48">
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32.png">
+  <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#0e2038">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AR Bandul Sederhana">
+  <meta property="og:locale" content="id_ID">
+  <meta property="og:url" content="https://chensqy.my.id/">
+  <meta property="og:title" content="AR Bandul Sederhana — Media Ajar WebAR 3D">
+  <meta property="og:description" content="Gerak bandul sederhana (pendulum) 3D lewat AR di browser HP: periode, pengaruh panjang tali, kekekalan energi.">
+  <meta property="og:image" content="https://chensqy.my.id/assets/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="AR Bandul Sederhana — media ajar WebAR gerak bandul 3D">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="AR Bandul Sederhana — Media Ajar WebAR 3D">
+  <meta name="twitter:description" content="Gerak bandul sederhana 3D lewat AR di browser HP.">
+  <meta name="twitter:image" content="https://chensqy.my.id/assets/og-image.jpg">
+
+  <!-- A-Frame + MindAR (image tracking) — self-hosted -->
+  <script src="./vendor/aframe-1.5.0.min.js"></script>
+  <script src="./vendor/mindar-image-aframe-1.2.5.prod.js"></script>
+
+  <!-- Logika bandul 3D + fisika + label -->
+  <script src="./js/pendulum.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, sans-serif; overflow: hidden; }
+
+    #info {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+      padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+      background: linear-gradient(to top, rgba(0,0,0,0.78), rgba(0,0,0,0));
+      color: #fff; text-align: center; font-size: 14px; line-height: 1.4;
+      pointer-events: none;
+    }
+    #info b { color: #ffb457; }
+
+    .scan-hint {
+      position: fixed; inset: 0; z-index: 9;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 14px;
+      color: #fff; text-align: center; padding: 24px;
+      pointer-events: none; transition: opacity .4s;
+    }
+    .scan-hint .box {
+      width: 200px; height: 270px; border: 2px dashed rgba(255,180,87,.9);
+      border-radius: 12px; animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+    .hidden { opacity: 0; }
+
+    /* Bar pemilih mode */
+    #modebar {
+      position: fixed; top: calc(10px + env(safe-area-inset-top)); left: 0; right: 0;
+      z-index: 11; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+      padding: 0 10px; pointer-events: none;
+    }
+    #modebar button {
+      pointer-events: auto; cursor: pointer; border: none; outline: none;
+      font: 600 13px/1 system-ui, sans-serif; color: #fff;
+      padding: 10px 14px; border-radius: 999px;
+      background: rgba(20,24,30,.62); backdrop-filter: blur(6px);
+      box-shadow: 0 2px 10px rgba(0,0,0,.3); transition: background .2s, transform .1s;
+    }
+    #modebar button:active { transform: scale(.95); }
+    #modebar button.active { background: #ff9614; box-shadow: 0 2px 14px rgba(255,150,20,.5); }
+    #modebar .title { width: 100%; text-align: center; color: #fff; font-size: 12px;
+      opacity: .85; margin-bottom: 2px; text-shadow: 0 1px 3px rgba(0,0,0,.6); pointer-events: none; }
+
+    /* Tombol penjelasan (?) */
+    #helpBtn {
+      position: fixed; z-index: 12; right: 14px; bottom: calc(58px + env(safe-area-inset-bottom));
+      width: 46px; height: 46px; border-radius: 50%; border: none; cursor: pointer;
+      background: #ff9614; color: #fff; font-size: 22px; font-weight: 700;
+      box-shadow: 0 3px 12px rgba(0,0,0,.4);
+    }
+
+    /* Panel penjelasan */
+    #explain {
+      position: fixed; inset: 0; z-index: 25; display: none;
+      align-items: center; justify-content: center; padding: 22px;
+      background: rgba(6,10,18,.72);
+    }
+    #explain.show { display: flex; }
+    #explain .card {
+      width: 100%; max-width: 440px; max-height: 82vh; overflow-y: auto;
+      background: #101a2b; border: 1px solid rgba(255,255,255,.12); border-radius: 18px;
+      padding: 22px; color: #e7edf6;
+    }
+    #explain h2 { margin: 0 0 4px; font-size: 20px; color: #fff; }
+    #explain .eq { display: inline-block; margin: 6px 0 12px; padding: 6px 12px;
+      background: rgba(255,150,20,.14); border: 1px solid rgba(255,150,20,.4);
+      border-radius: 10px; color: #ffca85; font-size: 16px; }
+    #explain p { margin: 0 0 12px; font-size: 14.5px; line-height: 1.6; color: #c4d0e2; }
+    #explain .sec { font-size: 11.5px; letter-spacing: .07em; text-transform: uppercase;
+      color: #ffb457; font-weight: 700; margin: 16px 0 7px; }
+    #explain ul { margin: 0 0 4px; padding-left: 20px; }
+    #explain li { font-size: 14px; line-height: 1.55; color: #c4d0e2; margin-bottom: 6px; }
+    #explain .vars li b { color: #fff; font-family: ui-monospace, monospace; }
+    #explain .close { margin-top: 14px; width: 100%; cursor: pointer; border: none;
+      border-radius: 12px; padding: 13px; font-weight: 700; color: #fff; background: #ff9614; }
+
+    /* Layar menu pembuka */
+    #welcome {
+      position: fixed; inset: 0; z-index: 30; display: flex;
+      align-items: center; justify-content: center; padding: 22px;
+      background: radial-gradient(120% 120% at 50% 0%, #16304f 0%, #08101c 70%);
+      transition: opacity .4s; overflow-y: auto;
+    }
+    #welcome.hidden { opacity: 0; pointer-events: none; }
+    #welcome .card { width: 100%; max-width: 430px; text-align: center; color: #fff; }
+    #welcome h1 { margin: 0 0 6px; font-size: 24px; }
+    #welcome .sub { margin: 0 0 20px; font-size: 14px; line-height: 1.5; color: #b9c6da; }
+    #welcome .choices { display: flex; flex-direction: column; gap: 12px; }
+    #welcome .choices button {
+      cursor: pointer; border: 1px solid rgba(255,255,255,.12); outline: none;
+      border-radius: 16px; padding: 15px 18px; text-align: left; color: #fff;
+      background: rgba(255,255,255,.06); transition: background .15s, transform .1s, border-color .15s;
+      display: flex; flex-direction: column; gap: 3px;
+    }
+    #welcome .choices button:active { transform: scale(.98); }
+    #welcome .choices button:hover { background: rgba(255,150,20,.16); border-color: rgba(255,150,20,.6); }
+    #welcome .choices b { font-size: 16px; }
+    #welcome .choices span { font-size: 12.5px; color: #aab7cc; }
+    #welcome .hint { margin-top: 16px; font-size: 12px; color: #8a98ad; }
+  </style>
+</head>
+<body>
+  <div id="welcome">
+    <div class="card">
+      <h1>🕰️ AR Bandul Sederhana</h1>
+      <p class="sub">Media pembelajaran Augmented Reality. Pilih materi untuk memulai, lalu arahkan kamera ke marker <b>Bandul Sederhana</b> yang tercetak.</p>
+      <div class="choices">
+        <button data-mode="A"><b>Bandul Tunggal</b><span>Ayunan satu bandul — sudut θ, panjang L, periode T live</span></button>
+        <button data-mode="B"><b>Pengaruh Panjang Tali</b><span>Tiga bandul beda panjang: makin panjang, makin lambat (T ∝ √L)</span></button>
+        <button data-mode="C"><b>Kekekalan Energi</b><span>Perubahan energi potensial ⇄ kinetik saat berayun</span></button>
+      </div>
+      <div class="hint">Mode bisa diganti kapan saja lewat tombol di atas layar. Tekan tombol <b>?</b> untuk penjelasan.</div>
+    </div>
+  </div>
+
+  <div class="scan-hint" id="scanHint">
+    <div class="box"></div>
+    <div>Arahkan kamera ke <b>marker Bandul</b> yang tercetak</div>
+  </div>
+
+  <div id="modebar">
+    <div class="title">Pilih materi</div>
+    <button data-mode="A" class="active">Bandul Tunggal</button>
+    <button data-mode="B">Panjang Tali</button>
+    <button data-mode="C">Energi</button>
+  </div>
+
+  <button id="helpBtn" title="Penjelasan">?</button>
+
+  <div id="explain">
+    <div class="card">
+      <h2 id="exTitle">Penjelasan</h2>
+      <div class="eq" id="exEq"></div>
+      <div id="exBody"></div>
+      <button class="close" id="exClose">Tutup</button>
+    </div>
+  </div>
+
+  <div id="info">
+    Bandul melayang di atas marker — <b>gerakkan HP</b> mengelilinginya untuk melihat 3D
+  </div>
+
+  <a-scene
+    mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiScanning: no; uiLoading: no; filterMinCF: 0.0005; filterBeta: 0.01"
+    color-space="sRGB"
+    renderer="colorManagement: true, physicallyCorrectLights: true, antialias: true"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false">
+
+    <a-assets></a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <!-- Pencahayaan untuk logam bandul + rangka kayu -->
+    <a-light type="ambient" color="#ffffff" intensity="0.55"></a-light>
+    <a-light type="hemisphere" color="#ffffff" groundColor="#404a5a" intensity="0.6"></a-light>
+    <a-light type="directional" color="#ffffff" intensity="0.9" position="0.6 1 1.5"></a-light>
+    <a-light type="directional" color="#cfe0ff" intensity="0.35" position="-0.8 0.4 0.6"></a-light>
+
+    <!-- Anchor dibuat DINAMIS via JS: satu <a-entity mindar-image-target> per foto
+         (targetIndex 0,1,2,...) sesuai jumlah foto di targets.mind.
+         Atur jumlahnya lewat TARGET_COUNT pada script di bawah. -->
+  </a-scene>
+
+  <script>
+    const sceneEl = document.querySelector('a-scene');
+    const hint = document.getElementById('scanHint');
+    const modebar = document.getElementById('modebar');
+    const welcome = document.getElementById('welcome');
+
+    // ---- Multi-marker: satu anchor per foto yang dikompilasi ke targets.mind ----
+    // targetIndex = urutan foto saat di-compile. Ubah angka ini bila menambah/
+    // mengurangi foto (semua foto menampilkan bandul yang sama, ikut tombol mode).
+    const TARGET_COUNT = 5;
+    let foundCount = 0;
+    for (let i = 0; i < TARGET_COUNT; i++) {
+      const anchor = document.createElement('a-entity');
+      anchor.setAttribute('mindar-image-target', 'targetIndex: ' + i);
+      const lab = document.createElement('a-entity');
+      lab.setAttribute('pendulum-lab', 'mode: A');
+      anchor.appendChild(lab);
+      sceneEl.appendChild(anchor);
+      anchor.addEventListener('targetFound', () => { foundCount++; hint.classList.add('hidden'); });
+      anchor.addEventListener('targetLost', () => {
+        foundCount = Math.max(0, foundCount - 1);
+        if (foundCount === 0) hint.classList.remove('hidden');
+      });
+    }
+
+    // ---- Isi penjelasan per mode (untuk tombol ?) — gaya media ajar ----
+    const EXPLAIN = {
+      A: {
+        title: 'Bandul Tunggal',
+        eq: 'T = 2π √(L / g)',
+        konsep: 'Bandul sederhana adalah sebuah beban bermassa <b>m</b> yang digantung pada tali ringan sepanjang <b>L</b>, lalu diayunkan. Untuk simpangan kecil (θ ≲ 15°), gerakannya adalah <b>Gerak Harmonik Sederhana (GHS)</b> — bolak-balik teratur dengan periode tetap. Gaya pemulihnya berasal dari komponen gaya berat, F = −mg·sin θ.',
+        vars: [
+          ['T', 'periode — waktu untuk satu ayunan penuh (sekon)'],
+          ['L', 'panjang tali (meter)'],
+          ['g', 'percepatan gravitasi ≈ 9,8 m/s²'],
+          ['θ', 'sudut simpangan terhadap posisi tegak']
+        ],
+        poin: [
+          'Periode <b>tidak bergantung pada massa</b> beban.',
+          'Untuk sudut kecil, periode juga <b>tidak bergantung pada besar simpangan</b>.',
+          'Frekuensi f = 1/T menyatakan jumlah ayunan tiap detik.'
+        ]
+      },
+      B: {
+        title: 'Pengaruh Panjang Tali',
+        eq: 'T ∝ √L',
+        konsep: 'Tiga bandul dengan panjang tali berbeda dilepas bersamaan dari sudut yang sama. Karena T = 2π√(L/g), tali yang <b>lebih panjang</b> memiliki periode <b>lebih besar</b>, sehingga berayun <b>lebih lambat</b>. Perhatikan ketiganya lama-kelamaan tidak lagi serempak.',
+        vars: [
+          ['L', 'panjang tali — makin besar, ayunan makin lambat'],
+          ['T', 'periode — sebanding dengan akar panjang tali']
+        ],
+        poin: [
+          'Panjang tali dijadikan 4× lipat → periode menjadi 2× (karena √4 = 2).',
+          'Massa dan sudut awal yang sama tidak membuat periodenya sama — yang menentukan adalah L.',
+          'Inilah dasar mengapa jam bandul memakai panjang tali tertentu agar periodenya tepat.'
+        ]
+      },
+      C: {
+        title: 'Kekekalan Energi',
+        eq: 'EM = EP + EK = tetap',
+        konsep: 'Selama berayun, energi berpindah bolak-balik antara <b>Energi Potensial (EP)</b> dan <b>Energi Kinetik (EK)</b>. EP maksimum di simpangan terjauh (bandul paling tinggi, sesaat diam), sedangkan EK maksimum di titik terendah (bandul paling cepat). Bila gesekan dan hambatan udara diabaikan, jumlah energi mekanik <b>EM = EP + EK selalu tetap</b>.',
+        vars: [
+          ['EP', 'energi potensial = m·g·h (bergantung ketinggian h)'],
+          ['EK', 'energi kinetik = ½·m·v² (bergantung kelajuan v)'],
+          ['EM', 'energi mekanik = EP + EK (kekal / tetap)']
+        ],
+        poin: [
+          'Di titik terendah: EP minimum, EK maksimum, kelajuan v paling besar.',
+          'Di simpangan terjauh: EK = 0, EP maksimum, bandul sesaat berhenti.',
+          'Pada bandul nyata, gesekan membuat ayunan mengecil (teredam) karena sebagian energi jadi panas.'
+        ]
+      }
+    };
+    let currentMode = 'A';
+
+    function applyMode(mode) {
+      currentMode = mode;
+      document.querySelectorAll('[pendulum-lab]').forEach((el) => {
+        const comp = el.components && el.components['pendulum-lab'];
+        if (comp) comp.setMode(mode);
+        else el.setAttribute('pendulum-lab', 'mode', mode);
+      });
+      [...modebar.querySelectorAll('button')].forEach((b) =>
+        b.classList.toggle('active', b.dataset.mode === mode));
+    }
+
+    modebar.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (btn) applyMode(btn.dataset.mode);
+    });
+
+    // ---- Panel penjelasan ----
+    const explain = document.getElementById('explain');
+    const exTitle = document.getElementById('exTitle');
+    const exEq = document.getElementById('exEq');
+    const exBody = document.getElementById('exBody');
+    document.getElementById('helpBtn').addEventListener('click', () => {
+      const d = EXPLAIN[currentMode];
+      exTitle.textContent = d.title;
+      exEq.textContent = d.eq;
+      const vars = d.vars.map(([s, t]) => '<li><b>' + s + '</b> — ' + t + '</li>').join('');
+      const poin = d.poin.map((t) => '<li>' + t + '</li>').join('');
+      exBody.innerHTML =
+        '<div class="sec">Konsep</div><p>' + d.konsep + '</p>' +
+        '<div class="sec">Keterangan</div><ul class="vars">' + vars + '</ul>' +
+        '<div class="sec">Poin penting</div><ul>' + poin + '</ul>';
+      explain.classList.add('show');
+    });
+    document.getElementById('exClose').addEventListener('click', () => explain.classList.remove('show'));
+    explain.addEventListener('click', (e) => { if (e.target === explain) explain.classList.remove('show'); });
+
+    // Mulai kamera AR setelah user memilih materi
+    function startAR() {
+      const sys = sceneEl.systems['mindar-image-system'];
+      if (sceneEl.hasLoaded) sys.start();
+      else sceneEl.addEventListener('loaded', () => sys.start(), { once: true });
+    }
+
+    welcome.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-mode]');
+      if (!btn) return;
+      applyMode(btn.dataset.mode);
+      welcome.classList.add('hidden');
+      setTimeout(() => { welcome.style.display = 'none'; }, 400);
+      startAR();
+    });
+  </script>
+</body>
+</html>
