@@ -159,9 +159,9 @@
     /* Pusatkan konten panel di layar lebar (tablet portrait) */
     .sheetHead, .tabs, #tabContent{ width:100%; max-width:900px; margin-left:auto; margin-right:auto; }
     /* Saat panel penjelasan terbuka: sembunyikan kontrol lain biar bersih & tak tumpang tindih */
-    #hud, #info, #modebar, #resetBtn, #helpBtn{ transition:opacity .25s; }
+    #hud, #info, #modebar, #resetBtn, #rescanBtn, #helpBtn{ transition:opacity .25s; }
     body.sheet-open #hud, body.sheet-open #info, body.sheet-open #modebar,
-    body.sheet-open #resetBtn, body.sheet-open #helpBtn{ opacity:0 !important; pointer-events:none !important; }
+    body.sheet-open #resetBtn, body.sheet-open #rescanBtn, body.sheet-open #helpBtn{ opacity:0 !important; pointer-events:none !important; }
 
     /* ---------- Layar pembuka ---------- */
     #welcome{
@@ -222,6 +222,13 @@
       padding:11px 14px; border-radius:999px; }
     #resetBtn:active{ transform:scale(.96); }
 
+    /* ---------- Tombol buka kunci / scan ulang ---------- */
+    #rescanBtn{ position:fixed; z-index:16; left:14px; bottom:calc(100px + env(safe-area-inset-bottom));
+      display:none; align-items:center; gap:7px; cursor:pointer; border:1px solid var(--accentBrd);
+      font:700 13px/1 var(--font); color:#3a2500; background:linear-gradient(180deg,#ffc061,#ff9f2e);
+      padding:11px 14px; border-radius:999px; box-shadow:0 4px 14px rgba(255,140,20,.35); }
+    #rescanBtn:active{ transform:scale(.96); }
+
     /* ---------- Landscape / miring ---------- */
     @media (orientation: landscape){
       #welcome{ align-items:center; }
@@ -275,6 +282,9 @@
   <!-- Reset tampilan 3D -->
   <button id="resetBtn">⟲ Reset 3D</button>
 
+  <!-- Buka kunci / scan ulang (muncul setelah objek terkunci) -->
+  <button id="rescanBtn">🔄 Scan Ulang</button>
+
   <!-- Scan hint -->
   <div class="scan-hint" id="scanHint">
     <div class="box"></div>
@@ -297,7 +307,7 @@
 
   <!-- Info bawah -->
   <div id="info">
-    Scan sekali → bandul <b>terkunci di layar</b>. <b>1 jari</b> putar · <b>2 jari</b> zoom · HP boleh digerakkan bebas
+    <b>Terkunci di layar.</b> <b>1 jari</b> putar · <b>2 jari</b> zoom &amp; geser · <b>🔄 Scan Ulang</b> untuk buka kunci
   </div>
 
   <a-scene
@@ -333,17 +343,20 @@
     // targets.mind) hanya dipakai sebagai PEMICU — cukup scan sekali, objek
     // muncul lalu bisa diputar/zoom & HP boleh digerakkan bebas.
     const TARGET_COUNT = 7;
+    const LOCK_POS = { x: 0, y: -0.05, z: -1.7 };   // posisi objek terkunci di depan kamera
     let locked = false;
+    const activeTargets = new Set();                 // marker yang sedang terlihat kamera
+    const rescanBtn = document.getElementById('rescanBtn');
 
     const lockLab = document.createElement('a-entity');
     lockLab.setAttribute('pendulum-lab', '');
-    lockLab.setAttribute('position', '0 -0.05 -1.7');   // melayang di depan kamera
+    lockLab.setAttribute('position', LOCK_POS.x + ' ' + LOCK_POS.y + ' ' + LOCK_POS.z);
     lockLab.setAttribute('scale', '0.75 0.75 0.75');
-    lockLab.object3D.visible = false;                   // baru tampil setelah scan
+    lockLab.object3D.visible = false;                // baru tampil setelah scan
     sceneEl.appendChild(lockLab);
 
     function refreshStatus(){
-      if (locked){ statusEl.classList.add('found'); statusTxt.textContent = 'Bandul terkunci — HP bebas digerakkan'; }
+      if (locked){ statusEl.classList.add('found'); statusTxt.textContent = 'Terkunci — putar/geser/zoom, HP bebas'; }
       else { statusEl.classList.remove('found'); statusTxt.textContent = 'Mencari marker…'; }
     }
     function lockOnScreen(){
@@ -352,17 +365,32 @@
       lockLab.object3D.visible = true;
       const c = lockLab.components && lockLab.components['pendulum-lab'];
       if (c) c._appear = 0;              // mainkan animasi "muncul"
-      applyXform();                      // terapkan rotasi/zoom user yang sedang aktif
+      applyXform();                      // terapkan rotasi/geser/zoom user yang aktif
       hint.classList.add('hidden');
+      rescanBtn.style.display = 'inline-flex';
       document.body.classList.add('ar-locked');
       refreshStatus();
+    }
+    function unlock(){
+      locked = false;
+      lockLab.object3D.visible = false;
+      rescanBtn.style.display = 'none';
+      resetXform();                      // balikkan posisi/rotasi/zoom ke default
+      hint.classList.remove('hidden');   // tampilkan lagi petunjuk scan
+      document.body.classList.remove('ar-locked');
+      refreshStatus();
+      // Kalau kamera masih menatap marker, kunci ulang sebentar lagi
+      // (event targetFound hanya memicu saat marker BARU terdeteksi).
+      setTimeout(() => { if (!locked && activeTargets.size > 0) lockOnScreen(); }, 500);
     }
     for (let i = 0; i < TARGET_COUNT; i++) {
       const anchor = document.createElement('a-entity');
       anchor.setAttribute('mindar-image-target', 'targetIndex: ' + i);
       sceneEl.appendChild(anchor);
-      anchor.addEventListener('targetFound', lockOnScreen);
+      anchor.addEventListener('targetFound', () => { activeTargets.add(i); if (!locked) lockOnScreen(); });
+      anchor.addEventListener('targetLost',  () => { activeTargets.delete(i); });
     }
+    if (rescanBtn) rescanBtn.addEventListener('click', unlock);
 
     // ===================== ISI TAB PENJELASAN (detail) =====================
     const TABS = [
@@ -560,25 +588,42 @@
     }
     modebar.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) applyMode(b.dataset.mode); });
 
-    // Putar (1 jari) & zoom (2 jari) objek 3D
-    let uRotY = 0, uRotX = 0, uScale = 1, lastDist = 0;
+    // Interaksi: 1 jari = putar · 2 jari = zoom + geser (pan) objek 3D
+    let uRotY = 0, uRotX = 0, uScale = 1, uTx = 0, uTy = 0;
+    let lastDist = 0, lastCx = 0, lastCy = 0;
     const pts = new Map();
-    function applyXform(){ eachLab((c) => { if (c.setUserTransform) c.setUserTransform(uRotY, uRotX, uScale); }); }
-    function isUI(t){ return t && t.closest && t.closest('#sheet,#modebar,#helpBtn,#resetBtn,#welcome,#status'); }
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    // konversi geser layar (px) -> satuan dunia pada jarak objek (fov kamera A-Frame = 80°)
+    const worldPerPx = () => (2 * Math.abs(LOCK_POS.z) * Math.tan(40 * Math.PI / 180)) / window.innerHeight;
+    function applyPan(){ lockLab.object3D.position.set(LOCK_POS.x + uTx, LOCK_POS.y + uTy, LOCK_POS.z); }
+    function applyXform(){ eachLab((c) => { if (c.setUserTransform) c.setUserTransform(uRotY, uRotX, uScale); }); applyPan(); }
+    function resetXform(){ uRotY = 0; uRotX = 0; uScale = 1; uTx = 0; uTy = 0; applyXform(); }
+    function isUI(t){ return t && t.closest && t.closest('#sheet,#modebar,#helpBtn,#resetBtn,#rescanBtn,#welcome,#status'); }
     window.addEventListener('pointerdown', (e) => { if (isUI(e.target)) return; pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); });
     window.addEventListener('pointermove', (e) => {
       if (!pts.has(e.pointerId)) return;
       const prev = pts.get(e.pointerId);
       const dx = e.clientX - prev.x, dy = e.clientY - prev.y;
       pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
-      if (pts.size === 1){ uRotY += dx * 0.006; uRotX = Math.max(-0.7, Math.min(0.7, uRotX + dy * 0.006)); applyXform(); }
-      else if (pts.size === 2){ const a = [...pts.values()]; const d = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y);
-        if (lastDist) { uScale = Math.max(0.4, Math.min(3.0, uScale * (d / lastDist))); applyXform(); } lastDist = d; }
+      if (pts.size === 1){ uRotY += dx * 0.006; uRotX = clamp(uRotX + dy * 0.006, -0.7, 0.7); applyXform(); }
+      else if (pts.size === 2){
+        const a = [...pts.values()];
+        const cx = (a[0].x + a[1].x) / 2, cy = (a[0].y + a[1].y) / 2;
+        const d = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y);
+        if (lastDist){
+          uScale = clamp(uScale * (d / lastDist), 0.4, 3.0);
+          const wpp = worldPerPx();
+          uTx = clamp(uTx + (cx - lastCx) * wpp, -1.6, 1.6);   // geser kiri-kanan
+          uTy = clamp(uTy - (cy - lastCy) * wpp, -1.6, 1.6);   // geser atas-bawah (layar Y ke bawah)
+          applyXform();
+        }
+        lastDist = d; lastCx = cx; lastCy = cy;
+      }
     });
     function endPt(e){ pts.delete(e.pointerId); if (pts.size < 2) lastDist = 0; }
     window.addEventListener('pointerup', endPt);
     window.addEventListener('pointercancel', endPt);
-    resetBtn.addEventListener('click', () => { uRotY = 0; uRotX = 0; uScale = 1; applyXform(); });
+    resetBtn.addEventListener('click', resetXform);
 
     // ===================== MULAI AR =====================
     function startAR() {
