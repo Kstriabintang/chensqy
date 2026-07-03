@@ -246,7 +246,7 @@
       <h1>🕰️ AR Bandul Sederhana</h1>
       <p class="sub">Visualisasi 3D <b>satu bandul berayun</b> melewati tiga posisi
         <b class="tagA">A</b> (kiri) → <b class="tagB">B</b> (tengah) → <b class="tagC">C</b> (kanan),
-        sesuai diagram penelitian. Muncul langsung di atas marker lewat kamera HP.</p>
+        sesuai diagram penelitian. Cukup scan marker sekali lewat kamera HP — objek lalu terkunci di layar.</p>
       <div class="chips">
         <span>Gerak A·B·C</span>
         <span>Gelombang Bandul</span>
@@ -254,7 +254,7 @@
         <span>Putar &amp; zoom 3D</span>
       </div>
       <button id="startBtn">Mulai — Buka Kamera<span>Arahkan ke marker Bandul yang tercetak</span></button>
-      <div class="hint">Saat AR berjalan: ganti <b>mode</b> di atas layar, <b>putar objek dengan 1 jari</b> &amp; <b>zoom dengan 2 jari</b>, dan tekan <b>📖 Penjelasan</b> untuk materi lengkap. Bisa dipakai dalam posisi <b>tegak maupun miring/landscape</b>.</div>
+      <div class="hint">Cukup <b>scan marker sekali</b> — bandul lalu <b>terkunci di layar</b> dan HP boleh digerakkan bebas tanpa objek hilang. Ganti <b>mode</b> di atas, <b>putar 1 jari</b> &amp; <b>zoom 2 jari</b>, tekan <b>📖 Penjelasan</b> untuk materi. Bisa <b>tegak maupun landscape</b>.</div>
       <div class="foot">© Ksatria Bintang Samudra · WebAR (A-Frame + MindAR)</div>
     </div>
   </div>
@@ -297,7 +297,7 @@
 
   <!-- Info bawah -->
   <div id="info">
-    <b>1 jari</b> putar · <b>2 jari</b> zoom · <b>gerakkan HP</b> mengelilingi marker untuk melihat 3D
+    Scan sekali → bandul <b>terkunci di layar</b>. <b>1 jari</b> putar · <b>2 jari</b> zoom · HP boleh digerakkan bebas
   </div>
 
   <a-scene
@@ -326,26 +326,42 @@
     const statusEl = document.getElementById('status');
     const statusTxt = document.getElementById('statusTxt');
 
-    // ---- Multi-marker: satu anchor per foto di targets.mind ----
+    // ---- Objek 3D "terkunci di layar" ----
+    // Satu bandul dibuat di LEVEL SCENE (bukan anak marker). Di MindAR kamera
+    // diam di titik asal, jadi objek di scene efektif TERKUNCI DI LAYAR: tetap
+    // tampil walau foto keluar dari kamera. Marker (semua targetIndex di
+    // targets.mind) hanya dipakai sebagai PEMICU — cukup scan sekali, objek
+    // muncul lalu bisa diputar/zoom & HP boleh digerakkan bebas.
     const TARGET_COUNT = 7;
-    let foundCount = 0;
+    let locked = false;
+
+    const lockLab = document.createElement('a-entity');
+    lockLab.setAttribute('pendulum-lab', '');
+    lockLab.setAttribute('position', '0 -0.05 -1.7');   // melayang di depan kamera
+    lockLab.setAttribute('scale', '0.75 0.75 0.75');
+    lockLab.object3D.visible = false;                   // baru tampil setelah scan
+    sceneEl.appendChild(lockLab);
+
     function refreshStatus(){
-      if (foundCount > 0){ statusEl.classList.add('found'); statusTxt.textContent = 'Marker terdeteksi — bandul aktif'; }
+      if (locked){ statusEl.classList.add('found'); statusTxt.textContent = 'Bandul terkunci — HP bebas digerakkan'; }
       else { statusEl.classList.remove('found'); statusTxt.textContent = 'Mencari marker…'; }
+    }
+    function lockOnScreen(){
+      if (locked) return;
+      locked = true;
+      lockLab.object3D.visible = true;
+      const c = lockLab.components && lockLab.components['pendulum-lab'];
+      if (c) c._appear = 0;              // mainkan animasi "muncul"
+      applyXform();                      // terapkan rotasi/zoom user yang sedang aktif
+      hint.classList.add('hidden');
+      document.body.classList.add('ar-locked');
+      refreshStatus();
     }
     for (let i = 0; i < TARGET_COUNT; i++) {
       const anchor = document.createElement('a-entity');
       anchor.setAttribute('mindar-image-target', 'targetIndex: ' + i);
-      const lab = document.createElement('a-entity');
-      lab.setAttribute('pendulum-lab', '');
-      anchor.appendChild(lab);
       sceneEl.appendChild(anchor);
-      anchor.addEventListener('targetFound', () => { foundCount++; hint.classList.add('hidden'); refreshStatus(); });
-      anchor.addEventListener('targetLost', () => {
-        foundCount = Math.max(0, foundCount - 1);
-        if (foundCount === 0) hint.classList.remove('hidden');
-        refreshStatus();
-      });
+      anchor.addEventListener('targetFound', lockOnScreen);
     }
 
     // ===================== ISI TAB PENJELASAN (detail) =====================
@@ -557,7 +573,7 @@
       pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
       if (pts.size === 1){ uRotY += dx * 0.006; uRotX = Math.max(-0.7, Math.min(0.7, uRotX + dy * 0.006)); applyXform(); }
       else if (pts.size === 2){ const a = [...pts.values()]; const d = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y);
-        if (lastDist) { uScale = Math.max(0.5, Math.min(2.5, uScale * (d / lastDist))); applyXform(); } lastDist = d; }
+        if (lastDist) { uScale = Math.max(0.4, Math.min(3.0, uScale * (d / lastDist))); applyXform(); } lastDist = d; }
     });
     function endPt(e){ pts.delete(e.pointerId); if (pts.size < 2) lastDist = 0; }
     window.addEventListener('pointerup', endPt);
