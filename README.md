@@ -16,6 +16,8 @@
   <img alt="A-Frame"  src="https://img.shields.io/badge/A--Frame-1.5-ef2d5e">
   <img alt="MindAR"   src="https://img.shields.io/badge/MindAR-image%20tracking-1f8fff">
   <img alt="WebAR"    src="https://img.shields.io/badge/WebAR-tanpa%20instal%20app-22c55e">
+  <img alt="Lisensi"  src="https://img.shields.io/badge/Lisensi-MIT-blue">
+  <a href="https://chensqy.my.id/"><img alt="Live" src="https://img.shields.io/badge/status-live-brightgreen"></a>
 </p>
 
 ---
