@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Bandul Sederhana — Materi 3D | chensqy</title>
+<meta name="description" content="Penampil 3D bandul sederhana: putar bebas, jeda animasi, dan keterangan bagian (titik tumpu, tali, beban, simpangan).">
+<meta name="theme-color" content="#123a74">
+<link rel="icon" href="/assets/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Bandul Sederhana — Materi 3D">
+<meta property="og:description" content="Model 3D bandul sederhana yang bisa diputar bebas & dijeda, lengkap dengan keterangan.">
+<meta property="og:image" content="/assets/og-image.jpg">
+<link rel="stylesheet" href="/css/viewer.css">
+<script type="importmap">
+{ "imports": { "three": "/vendor/three.module.js", "three/addons/": "/vendor/jsm/" } }
+</script>
+</head>
+<body>
+<div id="app"></div>
+<script>
+window.VIEWER_CONFIG = {
+  title: "Bandul Sederhana (Simple Pendulum)",
+  model: "/models/bandul-sederhana.glb",
+  clip: "Ayunan",
+  description: "<b>Bandul sederhana</b> adalah sistem berupa beban kecil yang digantung pada tali ringan. Ketika dilepaskan dari suatu simpangan, bandul bergerak bolak-balik melalui titik keseimbangan secara periodik sehingga menghasilkan gerak getaran.",
+  labels: [
+    { node: "Pivot", text: "Titik tumpu",        color: "#12386e", dx: -84, dy: -26 },
+    { node: "Tali",  text: "Tali",               color: "#12386e", dx:  96, dy: -8 },
+    { node: "Bola",  text: "Beban (m)",          color: "#1a4fa0", dx:  92, dy:  4 },
+    { at: [0, -0.158, 0], text: "Titik keseimbangan", color: "#12386e", dx: -104, dy: 6 },
+    { at: [0.11, -0.24, 0], text: "Simpangan (x)",    color: "#12386e", dx: 10,  dy: 44 }
+  ],
+  legend: [
+    { type: "dot",    color: "#12386e", term: "Titik tumpu",        desc: "titik gantung tetap tempat tali berporos." },
+    { type: "bar",    color: "#12386e", term: "Tali",               desc: "penggantung ringan yang dianggap tak bermassa." },
+    { type: "dot",    color: "#1a4fa0", term: "Beban (m)",          desc: "massa di ujung tali yang berayun." },
+    { type: "dashed", color: "#12386e", term: "Titik keseimbangan", desc: "posisi terendah bandul saat diam (tepat di bawah titik tumpu)." },
+    { type: "arrow",  color: "#12386e", term: "Simpangan (x)",      desc: "jarak beban dari titik keseimbangan saat berayun." }
+  ],
+  formula: {
+    title: "Periode bandul sederhana",
+    eqs: ["<i>T</i> = 2π √( <i>L</i> / <i>g</i> )"],
+    note: "<i>T</i> = periode (s), <i>L</i> = panjang tali (m), <i>g</i> = percepatan gravitasi (m/s²). Periode tidak bergantung pada besar massa beban."
+  }
+};
+</script>
+<script type="module" src="/js/viewer.js"></script>
+</body>
+</html>

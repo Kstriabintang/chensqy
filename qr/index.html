@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lembar QR — Materi Fisika 3D | chensqy</title>
+<meta name="description" content="Lembar QR untuk dicetak: bandul, gelombang transversal, dan gelombang longitudinal.">
+<meta name="theme-color" content="#123a74">
+<link rel="icon" href="/assets/favicon.ico" sizes="any">
+<style>
+:root{--font:"Inter","Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:var(--font); color:#1c2b40; background:#eef4fc; padding:28px 18px 60px}
+.wrap{max-width:900px; margin:0 auto}
+.top{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px}
+h1{font-size:clamp(20px,4vw,28px); margin:0}
+.sub{color:#51637b; margin:4px 0 24px; font-size:14px}
+.print{border:1px solid rgba(20,45,90,.16); background:#fff; color:#123a74; font-weight:700;
+  padding:10px 16px; border-radius:10px; cursor:pointer; font-family:var(--font)}
+.grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:22px}
+.card{background:#fff; border:1px solid rgba(20,45,90,.14); border-radius:16px; padding:20px; text-align:center;
+  box-shadow:0 10px 26px rgba(20,45,90,.10); break-inside:avoid}
+.card img{width:100%; max-width:230px; aspect-ratio:1; border-radius:10px}
+.card h2{font-size:17px; margin:12px 0 4px}
+.card .url{font-size:12px; color:#51637b; word-break:break-all}
+.card .cap{margin-top:8px; font-size:12.5px; color:#a9600a; font-weight:700}
+footer{margin-top:34px; text-align:center; color:#51637b; font-size:12.5px}
+@media print{
+  body{background:#fff; padding:0}
+  .print,.top .print{display:none}
+  .card{box-shadow:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1>Lembar QR — Materi Fisika 3D</h1></div>
+    <button class="print" onclick="window.print()">🖨️ Cetak</button>
+  </div>
+  <p class="sub">Pindai kode dengan kamera HP untuk membuka model 3D interaktif. Setiap kode menuju materinya masing-masing.</p>
+  <div class="grid">
+    <div class="card">
+      <img src="/media/qr/qr-bandul.png" alt="QR Bandul Sederhana">
+      <h2>Bandul Sederhana</h2>
+      <div class="url">chensqy.my.id/v/bandul/</div>
+      <div class="cap">Getaran · titik tumpu, tali, beban, simpangan</div>
+    </div>
+    <div class="card">
+      <img src="/media/qr/qr-gelombang-transversal.png" alt="QR Gelombang Transversal">
+      <h2>Gelombang Transversal</h2>
+      <div class="url">chensqy.my.id/v/gelombang-transversal/</div>
+      <div class="cap">Arah rambat · amplitudo · λ</div>
+    </div>
+    <div class="card">
+      <img src="/media/qr/qr-gelombang-longitudinal.png" alt="QR Gelombang Longitudinal">
+      <h2>Gelombang Longitudinal</h2>
+      <div class="url">chensqy.my.id/v/gelombang-longitudinal/</div>
+      <div class="cap">Rapatan · renggangan · λ</div>
+    </div>
+  </div>
+  <footer>chensqy.my.id · © 2026 Ksatria Bintang Samudra</footer>
+</div>
+</body>
+</html>

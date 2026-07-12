@@ -1,0 +1,139 @@
+/* Penampil 3D studio — chensqy.my.id. Tema terang (utama) + gelap. Tanpa font/asset eksternal. */
+:root {
+  --font: "Inter","Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --accent: #ff9f2e;
+  --chip-bg: #123a74;
+  --chip-ink: #ffffff;
+  --ink: #1f2d3d;
+  --sub: #4a5b70;
+  --panel-bg: rgba(255,255,255,.86);
+  --panel-brd: rgba(20,45,90,.14);
+  --btn-bg: rgba(255,255,255,.9);
+  --btn-ink: #21344d;
+  --btn-brd: rgba(20,45,90,.16);
+  --lead-bg: #ffffff;
+  --lead-brd: rgba(20,45,90,.16);
+  --shadow: 0 10px 30px rgba(20,45,90,.16);
+}
+:root[data-theme="gelap"] {
+  --chip-bg: #12376e;
+  --ink: #eaf1fb;
+  --sub: #aab8cf;
+  --panel-bg: rgba(12,20,34,.82);
+  --panel-brd: rgba(255,255,255,.12);
+  --btn-bg: rgba(15,26,46,.86);
+  --btn-ink: #dfe9f8;
+  --btn-brd: rgba(255,255,255,.14);
+  --lead-bg: #0f1a2e;
+  --lead-brd: rgba(255,255,255,.16);
+  --shadow: 0 10px 30px rgba(0,0,0,.45);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  font-family: var(--font);
+  color: var(--ink);
+  overflow: hidden;
+  background: radial-gradient(130% 120% at 50% 0%, #eef4fc 0%, #d6e3f4 70%); /* fallback; JS menimpa */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* panggung 3D */
+.v-stage { position: fixed; inset: 0; }
+.v-canvas, .v-labels { position: absolute; inset: 0; }
+.v-canvas canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+.v-labels { pointer-events: none; }
+
+/* chip judul */
+.v-chip {
+  position: fixed; top: max(14px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%);
+  z-index: 5; padding: 9px 18px; border-radius: 999px;
+  background: var(--chip-bg); color: var(--chip-ink);
+  font-weight: 800; font-size: clamp(14px, 3.6vw, 19px); letter-spacing: .2px;
+  box-shadow: var(--shadow); max-width: min(92vw, 620px); text-align: center;
+}
+
+/* toolbar kontrol */
+.v-toolbar {
+  position: fixed; z-index: 6; top: 50%; right: max(12px, env(safe-area-inset-right)); transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 10px;
+}
+.v-btn {
+  width: 46px; height: 46px; border-radius: 14px; cursor: pointer;
+  display: grid; place-items: center; padding: 0;
+  background: var(--btn-bg); color: var(--btn-ink); border: 1px solid var(--btn-brd);
+  box-shadow: var(--shadow); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  transition: transform .12s ease, background .2s ease;
+}
+.v-btn:hover { transform: translateY(-1px); }
+.v-btn:active { transform: scale(.94); }
+.v-btn svg { width: 24px; height: 24px; fill: currentColor; }
+.v-btn.is-paused { background: linear-gradient(180deg,#ffc061,#ff9f2e); color:#3a2500; border-color: transparent; }
+.v-btn.is-off { opacity: .55; }
+
+/* panel keterangan (bawah-kiri di desktop, bottom-sheet di HP) */
+.v-panel {
+  position: fixed; z-index: 6;
+  left: max(12px, env(safe-area-inset-left)); bottom: max(12px, env(safe-area-inset-bottom));
+  width: min(400px, calc(100vw - 24px));
+  background: var(--panel-bg); border: 1px solid var(--panel-brd); border-radius: 18px;
+  box-shadow: var(--shadow); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+.v-panel-head {
+  width: 100%; display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px; cursor: pointer; border: 0; background: transparent; color: var(--ink);
+  font-family: var(--font); font-weight: 800; font-size: 15px;
+}
+.v-panel-title::before { content: "ⓘ"; margin-right: 8px; color: var(--accent); font-weight: 900; }
+.v-caret { transition: transform .2s ease; color: var(--sub); }
+.v-panel.is-collapsed .v-caret { transform: rotate(-90deg); }
+.v-panel-body {
+  padding: 0 16px 16px; max-height: min(52vh, 440px); overflow-y: auto;
+  transition: max-height .25s ease, padding .25s ease, opacity .2s ease;
+}
+.v-panel.is-collapsed .v-panel-body { max-height: 0; padding-top: 0; padding-bottom: 0; opacity: 0; }
+.v-desc { margin: 2px 0 12px; font-size: 13.5px; line-height: 1.55; color: var(--sub); }
+
+.v-legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.v-legrow { display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: start; }
+.v-legtext { font-size: 13px; line-height: 1.5; color: var(--ink); }
+.v-mark { margin-top: 3px; height: 14px; border-radius: 3px; background: var(--c, #888); }
+.v-mark.mk-arrow { height: 0; border-top: 3px solid var(--c); margin-top: 9px; position: relative; }
+.v-mark.mk-arrow::after { content:""; position:absolute; right:-1px; top:-5px; border-left:8px solid var(--c); border-top:4px solid transparent; border-bottom:4px solid transparent; }
+.v-mark.mk-dashed { background: transparent; border-top: 3px dashed var(--c); height: 0; margin-top: 9px; }
+.v-mark.mk-dot { height: 14px; width: 14px; border-radius: 50%; background: var(--c); }
+
+.v-formula { margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: rgba(255,159,46,.10); border: 1px solid rgba(255,159,46,.32); }
+.v-formula-h { font-weight: 800; font-size: 13px; margin-bottom: 8px; color: var(--ink); }
+.v-eq { font-size: 15px; padding: 6px 0; color: var(--ink); font-variant-numeric: tabular-nums; }
+.v-eq i { color: #b46b00; font-style: italic; }
+:root[data-theme="gelap"] .v-eq i { color: var(--accent); }
+.v-formula-n { margin-top: 8px; font-size: 12px; line-height: 1.5; color: var(--sub); }
+
+/* label 3D (leader line) */
+.lbl3d { position: relative; width: 0; height: 0; }
+.lbl-lead { position: absolute; left: 0; top: 0; overflow: visible; }
+.lbl-pill {
+  position: absolute; white-space: nowrap; padding: 4px 9px; border-radius: 8px;
+  font-size: 12.5px; font-weight: 700; color: var(--c, #12386e);
+  background: var(--lead-bg); border: 1px solid var(--lead-brd);
+  box-shadow: 0 4px 14px rgba(20,45,90,.18);
+}
+
+/* loading */
+.v-loading {
+  position: fixed; inset: 0; z-index: 8; display: grid; place-content: center; gap: 14px; justify-items: center;
+  color: var(--sub); font-size: 14px; background: transparent; pointer-events: none;
+}
+.v-spin { width: 34px; height: 34px; border-radius: 50%; border: 3px solid rgba(20,45,90,.18); border-top-color: var(--accent); animation: vspin 1s linear infinite; }
+@keyframes vspin { to { transform: rotate(360deg); } }
+
+/* HP portrait: toolbar mendatar di bawah-kanan, panel jadi bottom-sheet */
+@media (max-width: 640px) {
+  .v-toolbar { top: auto; bottom: calc(max(12px, env(safe-area-inset-bottom)) + 4px); right: 10px; transform: none; flex-direction: row; }
+  .v-btn { width: 44px; height: 44px; }
+  .v-panel { left: 10px; right: 10px; width: auto; bottom: calc(max(12px, env(safe-area-inset-bottom)) + 62px); }
+  .v-panel-body { max-height: 34vh; }
+}
