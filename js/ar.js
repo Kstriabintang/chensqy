@@ -6,8 +6,8 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { MindARThree } from '/vendor/mindar/mindar-image-three.prod.js';
-import { MATERI, MATERI_BY_INDEX, getSpeed, setSpeed, SPEEDS, slugFromLocation } from '/js/materi.js';
-import { el, ICONS, setIcon, toolBtn, buildLabelEl, buildPanel } from '/js/ui.js';
+import { MATERI, MATERI_BY_INDEX, getSpeed, setSpeed, SPEEDS, slugFromLocation } from '/js/materi.js?v=2';
+import { el, ICONS, setIcon, toolBtn, buildLabelEl, buildPanel } from '/js/ui.js?v=2';
 
 const MARKER_SRC = '/media/marker/materi.mind';
 let speed = getSpeed();
