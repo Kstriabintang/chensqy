@@ -71,6 +71,10 @@ body {
 .v-btn svg { width: 24px; height: 24px; fill: currentColor; }
 .v-btn.is-paused { background: linear-gradient(180deg,#ffc061,#ff9f2e); color:#3a2500; border-color: transparent; }
 .v-btn.is-off { opacity: .55; }
+a.v-btn { text-decoration: none; }
+.v-btn-ar { background: linear-gradient(180deg,#ffc061,#ff9f2e); color:#3a2500; border-color: transparent; }
+.v-btn-speed { font-family: var(--font); font-weight: 800; font-size: 14px; letter-spacing: .3px; }
+.v-btn-speed.is-alt { color: var(--accent); border-color: rgba(255,159,46,.5); }
 
 /* panel keterangan (bawah-kiri di desktop, bottom-sheet di HP) */
 .v-panel {
@@ -129,6 +133,74 @@ body {
 }
 .v-spin { width: 34px; height: 34px; border-radius: 50%; border: 3px solid rgba(20,45,90,.18); border-top-color: var(--accent); animation: vspin 1s linear infinite; }
 @keyframes vspin { to { transform: rotate(360deg); } }
+
+/* ============ AR (kamera) ============ */
+.ar-root, .ar-container { position: fixed; inset: 0; background: #05070c; }
+.ar-container video, .ar-container canvas, .ar-container .ar-labels {
+  position: absolute !important; inset: 0; width: 100% !important; height: 100% !important; object-fit: cover;
+}
+.ar-container canvas { touch-action: none; }
+.ar-top {
+  position: fixed; z-index: 7; top: max(10px, env(safe-area-inset-top)); left: 10px; right: 10px;
+  display: flex; align-items: center; gap: 10px; pointer-events: none;
+}
+.ar-icbtn {
+  pointer-events: auto; width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center;
+  background: rgba(10,16,28,.5); color: #fff; border: 1px solid rgba(255,255,255,.18); text-decoration: none;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.ar-icbtn svg { width: 22px; height: 22px; fill: none; }
+.ar-title {
+  pointer-events: none; color: #fff; font-weight: 800; font-size: 15px; padding: 8px 14px; border-radius: 999px;
+  background: rgba(18,58,116,.66); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.ar-hint {
+  position: fixed; z-index: 6; left: 50%; top: 74px; transform: translateX(-50%);
+  color: #fff; font-size: 13px; padding: 9px 16px; border-radius: 999px; white-space: nowrap; max-width: 92vw;
+  background: rgba(10,16,28,.55); border: 1px solid rgba(255,255,255,.16);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: opacity .35s ease;
+}
+.ar-hint b { color: #ffd18a; }
+.ar-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #42d392; margin-right: 6px; animation: arpulse 1.4s infinite; }
+@keyframes arpulse { 0%,100% { opacity: 1 } 50% { opacity: .3 } }
+.ar-chips {
+  position: fixed; z-index: 6; left: 50%; bottom: calc(max(12px, env(safe-area-inset-bottom)) + 44px);
+  transform: translateX(-50%); display: flex; gap: 8px; max-width: 96vw; overflow-x: auto; padding: 4px;
+}
+.ar-chip {
+  flex: 0 0 auto; padding: 9px 15px; border-radius: 999px; font-family: var(--font); font-weight: 700; font-size: 13px;
+  color: #fff; background: rgba(10,16,28,.55); border: 1px solid rgba(255,255,255,.2); cursor: pointer;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.ar-chip.is-on { background: linear-gradient(180deg,#ffc061,#ff9f2e); color: #3a2500; border-color: transparent; }
+.ar-chiphelp {
+  position: fixed; z-index: 6; left: 50%; bottom: calc(max(12px, env(safe-area-inset-bottom)) + 12px);
+  transform: translateX(-50%); color: rgba(255,255,255,.82); font-size: 11.5px; text-align: center; max-width: 92vw;
+  text-shadow: 0 1px 4px rgba(0,0,0,.6);
+}
+.ar-toolbar { top: auto !important; bottom: calc(max(12px, env(safe-area-inset-bottom)) + 78px) !important; transform: none !important; }
+.ar-toast {
+  position: fixed; z-index: 8; left: 50%; top: 120px; transform: translateX(-50%) translateY(-8px);
+  background: rgba(10,16,28,.82); color: #fff; padding: 10px 18px; border-radius: 12px; font-size: 13.5px; font-weight: 700;
+  opacity: 0; pointer-events: none; transition: opacity .25s ease, transform .25s ease; border: 1px solid rgba(255,255,255,.14);
+}
+.ar-toast.is-on { opacity: 1; transform: translateX(-50%) translateY(0); }
+.ar-start {
+  position: fixed; inset: 0; z-index: 9; display: grid; place-items: center; padding: 20px;
+  background: radial-gradient(120% 120% at 50% 0%, #16305a 0%, #070d18 70%);
+}
+.ar-start-card { max-width: 420px; text-align: center; color: #eaf1fb; }
+.ar-start-ic { width: 74px; height: 74px; margin: 0 auto 14px; display: grid; place-items: center; border-radius: 20px;
+  background: rgba(255,159,46,.16); border: 1px solid rgba(255,159,46,.4); }
+.ar-start-ic svg { width: 38px; height: 38px; stroke: var(--accent); }
+.ar-start-card h2 { margin: 6px 0 10px; font-size: 24px; }
+.ar-start-card p { margin: 0 0 22px; color: #aab8cf; font-size: 14.5px; line-height: 1.6; }
+.ar-start-btn {
+  display: inline-block; padding: 14px 28px; border-radius: 14px; border: 0; cursor: pointer; text-decoration: none;
+  font-family: var(--font); font-weight: 800; font-size: 16px; color: #3a2500;
+  background: linear-gradient(180deg,#ffc061,#ff9f2e); box-shadow: 0 8px 22px rgba(255,159,46,.4);
+}
+.ar-start-alt { display: block; margin-top: 16px; color: #8fb4ee; text-decoration: none; font-size: 14px; }
 
 /* HP portrait: toolbar mendatar di bawah-kanan, panel jadi bottom-sheet */
 @media (max-width: 640px) {

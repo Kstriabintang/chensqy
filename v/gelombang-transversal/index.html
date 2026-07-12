@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Gelombang Transversal — Materi 3D | chensqy</title>
-<meta name="description" content="Penampil 3D gelombang transversal: putar bebas, jeda animasi, keterangan arah rambat, amplitudo, dan panjang gelombang.">
+<meta name="description" content="Penampil 3D gelombang transversal: putar bebas, atur kecepatan, jeda, mode AR kamera, keterangan arah rambat, amplitudo, dan panjang gelombang.">
 <meta name="theme-color" content="#123a74">
 <link rel="icon" href="/assets/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="/assets/favicon-32.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Gelombang Transversal — Materi 3D">
-<meta property="og:description" content="Model 3D gelombang transversal yang bisa diputar bebas & dijeda, lengkap dengan keterangan.">
+<meta property="og:description" content="Model 3D gelombang transversal: putar bebas, atur kecepatan, jeda, dan AR kamera.">
 <meta property="og:image" content="/assets/og-image.jpg">
 <link rel="stylesheet" href="/css/viewer.css">
 <script type="importmap">
@@ -20,30 +20,7 @@
 </head>
 <body>
 <div id="app"></div>
-<script>
-window.VIEWER_CONFIG = {
-  title: "Ilustrasi Gelombang Transversal",
-  model: "/models/gelombang-transversal.glb",
-  clip: "Gelombang",
-  description: "Gelombang <b>transversal</b> merambat ke arah kanan, dengan arah getar partikel <b>tegak lurus</b> terhadap arah rambat sehingga terbentuk puncak dan lembah.",
-  labels: [
-    { at: [0.06, 0.25, 0],   text: "Arah perambatan",       color: "#1f9c4d", dx: 0,   dy: -34 },
-    { at: [-0.24, 0.04, 0],  text: "Amplitudo (A)",         color: "#e23c3c", dx: -74, dy: 0 },
-    { at: [0.114, 0.155, 0], text: "Panjang gelombang (λ)", color: "#c78a00", dx: 0,   dy: -30 },
-    { at: [-0.34, 0, 0],     text: "Posisi setimbang",      color: "#5a6b82", dx: -64, dy: 0 }
-  ],
-  legend: [
-    { type: "arrow",  color: "#1f9c4d", term: "Panah hijau", desc: "arah perambatan gelombang (ke kanan)." },
-    { type: "arrow",  color: "#e23c3c", term: "Panah merah", desc: "amplitudo (A) — simpangan maksimum dari posisi setimbang (jarak titik setimbang ke puncak/lembah)." },
-    { type: "arrow",  color: "#c78a00", term: "Panah kuning", desc: "panjang gelombang (λ) — jarak dua titik sefase (dua puncak atau dua lembah berurutan)." }
-  ],
-  formula: {
-    title: "Besaran gelombang",
-    eqs: ["<i>v</i> = <i>λ</i> / <i>T</i> = <i>λ</i> · <i>f</i>", "<i>f</i> = <i>n</i> / <i>t</i>&nbsp;&nbsp;&nbsp;<i>T</i> = <i>t</i> / <i>n</i>&nbsp;&nbsp;&nbsp;<i>f</i> = 1 / <i>T</i>"],
-    note: "<i>v</i> = cepat rambat (m/s), <i>λ</i> = panjang gelombang (m), <i>T</i> = periode (s), <i>f</i> = frekuensi (Hz), <i>n</i> = jumlah gelombang, <i>t</i> = waktu (s)."
-  }
-};
-</script>
+<script>window.MATERI_SLUG = "gelombang-transversal";</script>
 <script type="module" src="/js/viewer.js"></script>
 </body>
 </html>

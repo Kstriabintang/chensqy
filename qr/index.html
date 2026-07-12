@@ -3,62 +3,46 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lembar QR — Materi Fisika 3D | chensqy</title>
-<meta name="description" content="Lembar QR untuk dicetak: bandul, gelombang transversal, dan gelombang longitudinal.">
+<title>Kartu AR & QR untuk Dicetak | chensqy</title>
+<meta name="description" content="Kartu materi untuk dicetak: arahkan kamera ke gambar (AR) atau pindai QR untuk membuka model 3D.">
 <meta name="theme-color" content="#123a74">
 <link rel="icon" href="/assets/favicon.ico" sizes="any">
 <style>
 :root{--font:"Inter","Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
 *{box-sizing:border-box}
 html,body{margin:0}
-body{font-family:var(--font); color:#1c2b40; background:#eef4fc; padding:28px 18px 60px}
+body{font-family:var(--font); color:#1c2b40; background:#eef4fc; padding:26px 16px 60px}
 .wrap{max-width:900px; margin:0 auto}
-.top{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:8px}
+.top{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:6px; flex-wrap:wrap}
 h1{font-size:clamp(20px,4vw,28px); margin:0}
-.sub{color:#51637b; margin:4px 0 24px; font-size:14px}
-.print{border:1px solid rgba(20,45,90,.16); background:#fff; color:#123a74; font-weight:700;
-  padding:10px 16px; border-radius:10px; cursor:pointer; font-family:var(--font)}
-.grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:22px}
-.card{background:#fff; border:1px solid rgba(20,45,90,.14); border-radius:16px; padding:20px; text-align:center;
+.sub{color:#51637b; margin:6px 0 22px; font-size:14px; line-height:1.6; max-width:640px}
+.btns{display:flex; gap:10px}
+.btn{border:1px solid rgba(20,45,90,.18); background:#fff; color:#123a74; font-weight:700; font-family:var(--font);
+  padding:10px 16px; border-radius:10px; cursor:pointer; text-decoration:none; font-size:14px}
+.btn.acc{background:linear-gradient(180deg,#ffc061,#ff9f2e); color:#3a2500; border-color:transparent}
+.cards{display:grid; gap:26px}
+.kartu{background:#fff; border:1px solid rgba(20,45,90,.14); border-radius:16px; overflow:hidden;
   box-shadow:0 10px 26px rgba(20,45,90,.10); break-inside:avoid}
-.card img{width:100%; max-width:230px; aspect-ratio:1; border-radius:10px}
-.card h2{font-size:17px; margin:12px 0 4px}
-.card .url{font-size:12px; color:#51637b; word-break:break-all}
-.card .cap{margin-top:8px; font-size:12.5px; color:#a9600a; font-weight:700}
-footer{margin-top:34px; text-align:center; color:#51637b; font-size:12.5px}
-@media print{
-  body{background:#fff; padding:0}
-  .print,.top .print{display:none}
-  .card{box-shadow:none}
-}
+.kartu img{width:100%; display:block}
+.cap{padding:10px 16px; font-size:13px; color:#51637b; text-align:center; border-top:1px solid #eef2f8}
+footer{margin-top:30px; text-align:center; color:#51637b; font-size:12.5px}
+@media print{ body{background:#fff; padding:0} .btns,.sub{display:none} .kartu{box-shadow:none; page-break-after:always; border:none} h1{display:none} }
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="top">
-    <div><h1>Lembar QR — Materi Fisika 3D</h1></div>
-    <button class="print" onclick="window.print()">🖨️ Cetak</button>
+    <h1>Kartu AR &amp; QR untuk Dicetak</h1>
+    <div class="btns">
+      <a class="btn" href="/scan/">🎥 Buka Scan AR</a>
+      <button class="btn acc" onclick="window.print()">🖨️ Cetak</button>
+    </div>
   </div>
-  <p class="sub">Pindai kode dengan kamera HP untuk membuka model 3D interaktif. Setiap kode menuju materinya masing-masing.</p>
-  <div class="grid">
-    <div class="card">
-      <img src="/media/qr/qr-bandul.png" alt="QR Bandul Sederhana">
-      <h2>Bandul Sederhana</h2>
-      <div class="url">chensqy.my.id/v/bandul/</div>
-      <div class="cap">Getaran · titik tumpu, tali, beban, simpangan</div>
-    </div>
-    <div class="card">
-      <img src="/media/qr/qr-gelombang-transversal.png" alt="QR Gelombang Transversal">
-      <h2>Gelombang Transversal</h2>
-      <div class="url">chensqy.my.id/v/gelombang-transversal/</div>
-      <div class="cap">Arah rambat · amplitudo · λ</div>
-    </div>
-    <div class="card">
-      <img src="/media/qr/qr-gelombang-longitudinal.png" alt="QR Gelombang Longitudinal">
-      <h2>Gelombang Longitudinal</h2>
-      <div class="url">chensqy.my.id/v/gelombang-longitudinal/</div>
-      <div class="cap">Rapatan · renggangan · λ</div>
-    </div>
+  <p class="sub">Cetak kartu di bawah. Buka <b>chensqy.my.id → “Scan AR”</b>, lalu <b>arahkan kamera ke gambar</b> pada kartu untuk memunculkan objek 3D langsung di kamera — atau <b>pindai QR</b>-nya. Satu kartu berfungsi untuk keduanya.</p>
+  <div class="cards">
+    <div class="kartu"><img src="/media/marker/kartu-bandul.png" alt="Kartu AR Bandul Sederhana"><div class="cap">Bandul Sederhana · chensqy.my.id/v/bandul/</div></div>
+    <div class="kartu"><img src="/media/marker/kartu-gelombang-transversal.png" alt="Kartu AR Gelombang Transversal"><div class="cap">Gelombang Transversal · chensqy.my.id/v/gelombang-transversal/</div></div>
+    <div class="kartu"><img src="/media/marker/kartu-gelombang-longitudinal.png" alt="Kartu AR Gelombang Longitudinal"><div class="cap">Gelombang Longitudinal · chensqy.my.id/v/gelombang-longitudinal/</div></div>
   </div>
   <footer>chensqy.my.id · © 2026 Ksatria Bintang Samudra</footer>
 </div>

@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Gelombang Longitudinal — Materi 3D | chensqy</title>
-<meta name="description" content="Penampil 3D gelombang longitudinal: putar bebas, jeda animasi, keterangan rapatan, renggangan, dan panjang gelombang.">
+<meta name="description" content="Penampil 3D gelombang longitudinal: putar bebas, atur kecepatan, jeda, mode AR kamera, keterangan rapatan, renggangan, dan panjang gelombang.">
 <meta name="theme-color" content="#123a74">
 <link rel="icon" href="/assets/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="/assets/favicon-32.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Gelombang Longitudinal — Materi 3D">
-<meta property="og:description" content="Model 3D gelombang longitudinal yang bisa diputar bebas & dijeda, lengkap dengan keterangan.">
+<meta property="og:description" content="Model 3D gelombang longitudinal: putar bebas, atur kecepatan, jeda, dan AR kamera.">
 <meta property="og:image" content="/assets/og-image.jpg">
 <link rel="stylesheet" href="/css/viewer.css">
 <script type="importmap">
@@ -20,32 +20,7 @@
 </head>
 <body>
 <div id="app"></div>
-<script>
-window.VIEWER_CONFIG = {
-  title: "Ilustrasi Gelombang Longitudinal",
-  model: "/models/gelombang-longitudinal.glb",
-  clip: "Gelombang",
-  description: "Gelombang <b>longitudinal</b> merambat ke arah kanan. Partikel medium bergetar <b>sejajar</b> arah rambat sehingga terbentuk <b>rapatan</b> dan <b>renggangan</b>. Jarak dua rapatan (atau dua renggangan) berurutan adalah panjang gelombang (λ).",
-  labels: [
-    { at: [0.45, 0.13, 0],   text: "Arah perambatan",       color: "#1f9c4d", dx: 0,   dy: -60 },
-    { at: [0.14, 0.085, 0],  text: "Rapatan (Kompresi)",    color: "#1a4fa0", dx: -48, dy: -30 },
-    { at: [0.32, 0.085, 0],  text: "Renggangan (Rarefaksi)",color: "#e23c3c", dx: 34,  dy: -22 },
-    { at: [0.24, -0.1, 0],   text: "Panjang gelombang (λ)", color: "#c78a00", dx: 0,   dy: 38 },
-    { node: "Speaker", text: "Sumber getar",                color: "#12386e", dx: -70, dy: -6 }
-  ],
-  legend: [
-    { type: "arrow", color: "#1f9c4d", term: "Panah hijau", desc: "arah perambatan gelombang (ke kanan)." },
-    { type: "dot",   color: "#1a4fa0", term: "Rapatan (Kompresi)",  desc: "daerah partikel yang rapat, saling berdekatan." },
-    { type: "dot",   color: "#e23c3c", term: "Renggangan (Rarefaksi)", desc: "daerah partikel yang renggang, saling berjauhan." },
-    { type: "arrow", color: "#c78a00", term: "Panjang gelombang (λ)", desc: "jarak dua rapatan (atau dua renggangan) berurutan." }
-  ],
-  formula: {
-    title: "Besaran gelombang",
-    eqs: ["<i>v</i> = <i>λ</i> / <i>T</i> = <i>λ</i> · <i>f</i>", "<i>f</i> = <i>n</i> / <i>t</i>&nbsp;&nbsp;&nbsp;<i>T</i> = <i>t</i> / <i>n</i>&nbsp;&nbsp;&nbsp;<i>f</i> = 1 / <i>T</i>"],
-    note: "<i>v</i> = cepat rambat (m/s), <i>λ</i> = panjang gelombang (m), <i>T</i> = periode (s), <i>f</i> = frekuensi (Hz), <i>n</i> = jumlah gelombang, <i>t</i> = waktu (s)."
-  }
-};
-</script>
+<script>window.MATERI_SLUG = "gelombang-longitudinal";</script>
 <script type="module" src="/js/viewer.js"></script>
 </body>
 </html>

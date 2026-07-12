@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Bandul Sederhana — Materi 3D | chensqy</title>
-<meta name="description" content="Penampil 3D bandul sederhana: putar bebas, atur kecepatan, jeda animasi, mode AR kamera, dan keterangan tiap bagian.">
-<meta name="theme-color" content="#123a74">
+<title>AR Kamera — Scan Materi 3D | chensqy</title>
+<meta name="description" content="Mode AR kamera: arahkan kamera HP ke kartu materi atau scan QR untuk memunculkan objek 3D langsung di kamera.">
+<meta name="theme-color" content="#070d18">
 <link rel="icon" href="/assets/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" href="/assets/favicon-32.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Bandul Sederhana — Materi 3D">
-<meta property="og:description" content="Model 3D bandul sederhana: putar bebas, atur kecepatan, jeda, dan AR kamera.">
+<meta property="og:title" content="AR Kamera — Scan Materi 3D">
+<meta property="og:description" content="Arahkan kamera ke kartu materi atau scan QR untuk memunculkan objek 3D di kamera.">
 <meta property="og:image" content="/assets/og-image.jpg">
 <link rel="stylesheet" href="/css/viewer.css">
 <script type="importmap">
@@ -20,7 +20,7 @@
 </head>
 <body>
 <div id="app"></div>
-<script>window.MATERI_SLUG = "bandul";</script>
-<script type="module" src="/js/viewer.js"></script>
+<script src="/vendor/jsqr.min.js"></script>
+<script type="module" src="/js/ar.js"></script>
 </body>
 </html>

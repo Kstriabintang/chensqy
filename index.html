@@ -49,6 +49,11 @@ header{display:flex; align-items:center; justify-content:space-between; gap:12px
 .hint{display:inline-flex; align-items:center; gap:8px; margin-top:16px; padding:8px 16px; border-radius:999px;
   background:rgba(255,159,46,.14); border:1px solid rgba(255,159,46,.4); color:#a9600a; font-weight:700; font-size:13.5px}
 :root[data-theme="gelap"] .hint{color:var(--accent)}
+.cta-row{display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:18px}
+.cta{display:inline-flex; align-items:center; gap:8px; padding:13px 22px; border-radius:14px; font-weight:800; font-size:15px;
+  text-decoration:none; color:#3a2500; background:linear-gradient(180deg,var(--accent2),var(--accent)); box-shadow:0 8px 20px rgba(255,159,46,.36)}
+.cta:active{transform:scale(.98)}
+.cta-ghost{color:var(--brand); background:var(--card); border:1px solid var(--line); box-shadow:var(--shadow)}
 .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:20px; margin-top:8px}
 .card{background:var(--card); border:1px solid var(--line); border-radius:20px; overflow:hidden;
   box-shadow:var(--shadow); display:flex; flex-direction:column; transition:transform .15s ease, box-shadow .15s ease}
@@ -82,6 +87,10 @@ footer a{color:var(--brand); font-weight:700; text-decoration:none}
     <h1>Materi Fisika 3D</h1>
     <p>Model 3D interaktif untuk bandul dan gelombang. Putar bebas dari segala sudut, jeda animasinya, dan baca keterangan tiap bagian.</p>
     <div class="hint">📷 Pindai QR di tiap kartu, atau ketuk “Buka 3D”.</div>
+    <div class="cta-row">
+      <a class="cta" href="/scan/">🎥 Buka Scan AR (kamera)</a>
+      <a class="cta cta-ghost" href="/qr/">🖨️ Kartu AR &amp; QR</a>
+    </div>
   </section>
 
   <section class="grid">

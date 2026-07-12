@@ -7,19 +7,11 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+import { MATERI, slugFromLocation, getSpeed, setSpeed, SPEEDS, THEME_KEY } from '/js/materi.js';
+import { el, ICONS, setIcon, toolBtn, buildLabelEl, buildPanel } from '/js/ui.js';
 
-const CFG = window.VIEWER_CONFIG || {};
-const THEME_KEY = 'chensqy-theme';
-
-const ICONS = {
-  pause: '<svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>',
-  play:  '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>',
-  reset: '<svg viewBox="0 0 24 24"><path d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"/></svg>',
-  tag:   '<svg viewBox="0 0 24 24"><path d="M4 4h9l7 7-9 9-7-7V4z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="8.5" r="1.6"/></svg>',
-  moon:  '<svg viewBox="0 0 24 24"><path d="M20 14a8 8 0 1 1-10-10 8 8 0 0 0 10 10z"/></svg>',
-  sun:   '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><g stroke="currentColor" stroke-width="2" fill="none"><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></g></svg>',
-  full:  '<svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
-};
+const SLUG = window.MATERI_SLUG || slugFromLocation();
+const CFG = window.VIEWER_CONFIG || MATERI[SLUG] || {};
 
 const THEMES = {
   terang: { bgTop:'#eef4fc', bgBot:'#d6e3f4', fog:'#e2ebf8', grid:0xc3d2e8, gridC:0xa7bcdd, shadow:0.16 },
@@ -39,14 +31,20 @@ const chip = el('div', 'v-chip');
 chip.textContent = CFG.title || 'Penampil 3D';
 
 const toolbar = el('div', 'v-toolbar');
+const btnAR     = el('a', 'v-btn v-btn-ar'); btnAR.href = '/scan/' + (SLUG ? '?m=' + SLUG : ''); btnAR.title = 'Buka mode AR kamera'; btnAR.setAttribute('aria-label', 'Buka mode AR kamera'); btnAR.innerHTML = ICONS.ar;
 const btnPlay   = toolBtn('pause', 'Jeda / putar animasi');
+const btnSpeed  = el('button', 'v-btn v-btn-speed'); btnSpeed.type = 'button'; btnSpeed.title = 'Kecepatan animasi';
 const btnReset  = toolBtn('reset', 'Kembalikan sudut pandang');
 const btnLabels = toolBtn('tag',   'Tampil / sembunyikan label');
 const btnTheme  = toolBtn('moon',  'Mode terang / gelap');
 const btnFull   = toolBtn('full',  'Layar penuh');
-toolbar.append(btnPlay, btnReset, btnLabels, btnTheme, btnFull);
+toolbar.append(btnAR, btnPlay, btnSpeed, btnReset, btnLabels, btnTheme, btnFull);
+let speed = getSpeed();
+function fmtSpeed(v) { return (v % 1 === 0 ? v : v.toString().replace('0.', '.')) + '×'; }
+function renderSpeed() { btnSpeed.textContent = fmtSpeed(speed); }
+renderSpeed();
 
-const panel = buildPanel();
+const panel = buildPanel(CFG);
 
 const loading = el('div', 'v-loading');
 loading.innerHTML = '<div class="v-spin"></div><span>Memuat model 3D…</span>';
@@ -164,8 +162,10 @@ function onModel(gltf) {
     mixer = new THREE.AnimationMixer(model);
     const clip = (CFG.clip && THREE.AnimationClip.findByName(gltf.animations, CFG.clip)) || gltf.animations[0];
     mixer.clipAction(clip).play();
+    mixer.timeScale = speed;
   } else {
     btnPlay.style.display = 'none';
+    btnSpeed.style.display = 'none';
   }
 
   // label menempel ke objek / titik tetap
@@ -200,6 +200,12 @@ btnPlay.addEventListener('click', () => {
   playing = !playing;
   setIcon(btnPlay, playing ? 'pause' : 'play');
   btnPlay.classList.toggle('is-paused', !playing);
+});
+btnSpeed.addEventListener('click', () => {
+  const i = (SPEEDS.indexOf(speed) + 1) % SPEEDS.length;
+  speed = SPEEDS[i]; setSpeed(speed); renderSpeed();
+  if (mixer) mixer.timeScale = speed;
+  btnSpeed.classList.toggle('is-alt', speed !== 1);
 });
 btnReset.addEventListener('click', () => {
   camera.position.copy(homePos); controls.target.copy(homeTarget); controls.update();
@@ -242,71 +248,3 @@ function resize() {
 }
 new ResizeObserver(resize).observe(stage);
 resize();
-
-// ---------- helpers UI ----------
-function el(tag, cls) { const n = document.createElement(tag); if (cls) n.className = cls; return n; }
-
-function toolBtn(icon, title) {
-  const b = el('button', 'v-btn'); b.type = 'button'; b.title = title;
-  b.setAttribute('aria-label', title); setIcon(b, icon); return b;
-}
-function setIcon(btn, icon) { btn.dataset.icon = icon; btn.innerHTML = ICONS[icon] || ''; }
-
-function buildLabelEl(L) {
-  const c = L.color || '#12386e';
-  const dx = L.dx != null ? L.dx : 96;
-  const dy = L.dy != null ? L.dy : -14;
-  const wrap = el('div', 'lbl3d');
-  const svgns = 'http://www.w3.org/2000/svg';
-  const svg = document.createElementNS(svgns, 'svg');
-  svg.setAttribute('class', 'lbl-lead'); svg.setAttribute('overflow', 'visible');
-  svg.setAttribute('width', '1'); svg.setAttribute('height', '1');
-  const line = document.createElementNS(svgns, 'line');
-  line.setAttribute('x1', 0); line.setAttribute('y1', 0);
-  line.setAttribute('x2', dx); line.setAttribute('y2', dy);
-  line.setAttribute('stroke', c); line.setAttribute('stroke-width', '1.6');
-  const dot = document.createElementNS(svgns, 'circle');
-  dot.setAttribute('cx', 0); dot.setAttribute('cy', 0); dot.setAttribute('r', 3.2); dot.setAttribute('fill', c);
-  svg.append(line, dot);
-  const pill = el('span', 'lbl-pill');
-  pill.textContent = L.text;
-  pill.style.setProperty('--c', c);
-  pill.style.left = dx + 'px'; pill.style.top = dy + 'px';
-  pill.style.transform = `translate(${dx < 0 ? '-100%' : '0'}, -50%)`;
-  wrap.append(svg, pill);
-  return wrap;
-}
-
-function buildPanel() {
-  const p = el('div', 'v-panel');
-  const head = el('button', 'v-panel-head'); head.type = 'button';
-  head.innerHTML = '<span class="v-panel-title">Keterangan</span><span class="v-caret">▾</span>';
-  const body = el('div', 'v-panel-body');
-
-  if (CFG.description) { const d = el('p', 'v-desc'); d.innerHTML = CFG.description; body.appendChild(d); }
-
-  if (CFG.legend && CFG.legend.length) {
-    const list = el('ul', 'v-legend');
-    CFG.legend.forEach((row) => {
-      const li = el('li', 'v-legrow');
-      const mk = el('span', 'v-mark ' + (row.type ? 'mk-' + row.type : ''));
-      if (row.color) mk.style.setProperty('--c', row.color);
-      const tx = el('span', 'v-legtext');
-      tx.innerHTML = '<b style="color:' + (row.color || 'inherit') + '">' + row.term + '</b> — ' + row.desc;
-      li.append(mk, tx); list.appendChild(li);
-    });
-    body.appendChild(list);
-  }
-
-  if (CFG.formula) {
-    const f = el('div', 'v-formula');
-    f.innerHTML = (CFG.formula.title ? '<div class="v-formula-h">' + CFG.formula.title + '</div>' : '')
-      + (CFG.formula.eqs || []).map((e) => '<div class="v-eq">' + e + '</div>').join('')
-      + (CFG.formula.note ? '<div class="v-formula-n">' + CFG.formula.note + '</div>' : '');
-    body.appendChild(f);
-  }
-
-  p.append(head, body);
-  head.addEventListener('click', () => p.classList.toggle('is-collapsed'));
-  return p;
-}
