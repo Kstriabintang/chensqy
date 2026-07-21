@@ -9,7 +9,7 @@ import { MindARThree } from '/vendor/mindar/mindar-image-three.prod.js';
 import { MATERI, MATERI_BY_INDEX, getSpeed, setSpeed, SPEEDS, slugFromLocation } from '/js/materi.js?v=3';
 import { el, ICONS, setIcon, toolBtn, buildLabelEl, buildPanel } from '/js/ui.js?v=3';
 
-const MARKER_SRC = '/media/marker/materi.mind';
+const MARKER_SRC = '/media/marker/materi.mind?v=3'; // ?v dinaikkan tiap .mind berubah (lawan cache GitHub Pages)
 let speed = getSpeed();
 let playing = true;
 let labelsOn = false;
