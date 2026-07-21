@@ -6,8 +6,8 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
 import { MindARThree } from '/vendor/mindar/mindar-image-three.prod.js';
-import { MATERI, MATERI_BY_INDEX, getSpeed, setSpeed, SPEEDS, slugFromLocation } from '/js/materi.js?v=2';
-import { el, ICONS, setIcon, toolBtn, buildLabelEl, buildPanel } from '/js/ui.js?v=2';
+import { MATERI, MATERI_BY_INDEX, getSpeed, setSpeed, SPEEDS, slugFromLocation } from '/js/materi.js?v=3';
+import { el, ICONS, setIcon, toolBtn, buildLabelEl, buildPanel } from '/js/ui.js?v=3';
 
 const MARKER_SRC = '/media/marker/materi.mind';
 let speed = getSpeed();
@@ -27,7 +27,7 @@ const topTitle = el('div', 'ar-title'); topTitle.textContent = 'AR Kamera';
 topbar.append(btnHome, topTitle);
 
 const hint = el('div', 'ar-hint');
-hint.innerHTML = '<span class="ar-dot"></span> Arahkan kamera ke <b>kartu materi</b>, atau scan <b>QR</b>-nya';
+hint.innerHTML = '<span class="ar-dot"></span> Scan <b>QR</b> materi (paling andal), atau arahkan ke <b>gambar/kartu</b>-nya';
 
 const chips = el('div', 'ar-chips');
 MATERI_BY_INDEX.forEach((m) => {
@@ -56,15 +56,19 @@ start.innerHTML =
   '<div class="ar-start-card">' +
   '<div class="ar-start-ic">' + ICONS.camera + '</div>' +
   '<h2>Mode AR Kamera</h2>' +
-  '<p>Arahkan kamera HP ke <b>kartu materi</b> (atau scan QR-nya) untuk memunculkan objek 3D langsung di kamera. Bisa juga pilih materi lalu ketuk layar tanpa kartu.</p>' +
+  '<p><b>Scan QR</b> pada kartu/flipbook adalah cara paling andal untuk memunculkan objek 3D di kamera. Bisa juga arahkan kamera ke gambar materinya, atau pilih materi lalu ketuk layar untuk menaruh objek tanpa kartu.</p>' +
   '<button class="ar-start-btn" type="button">Mulai kamera</button>' +
   '<a class="ar-start-alt" href="/">Batal</a>' +
   '</div>';
 
 const toast = el('div', 'ar-toast');
 
-app.append(arRoot, topbar, hint, chips, chipHelp, toolbar, toast, start);
-[hint, chips, chipHelp, toolbar].forEach((n) => n.style.display = 'none');
+// dok kontrol bawah — panel keterangan + chiphelp + chips + toolbar dalam satu kolom (anti tumpang-tindih)
+const dock = el('div', 'ar-dock');
+dock.append(chipHelp, chips, toolbar);
+
+app.append(arRoot, topbar, hint, dock, toast, start);
+[hint, dock].forEach((n) => n.style.display = 'none');
 
 // ---------- three helpers ----------
 const clock = new THREE.Clock();
@@ -158,15 +162,20 @@ async function initAR() {
   labelRenderer.domElement.style.cssText = 'position:absolute;inset:0;pointer-events:none;display:none';
   container.appendChild(labelRenderer.domElement);
 
-  // anchor per materi (index marker 0/1/2)
-  MATERI_BY_INDEX.forEach((m) => {
-    const anchor = mindarThree.addAnchor(m.markerIndex);
+  // anchor per materi. materi.mind punya 6 target: 0-2 = KARTU cetak, 3-5 = ILUSTRASI
+  // (crop dari kartu, cocok dgn infografis flipbook). Keduanya memunculkan materi yg sama.
+  function addMaterialAnchor(slug, index) {
+    const anchor = mindarThree.addAnchor(index);
     let inst = null;
     anchor.onTargetFound = async () => {
-      if (!inst) { inst = await instantiate(m.slug, { size: 0.9, sit: true }); anchor.group.add(inst.root); }
-      setActive(m.slug); popIn(inst.root); hideHint();
+      if (!inst) { inst = await instantiate(slug, { size: 0.9, sit: true }); anchor.group.add(inst.root); }
+      setActive(slug); popIn(inst.root); hideHint();
     };
     anchor.onTargetLost = () => {};
+  }
+  MATERI_BY_INDEX.forEach((m) => {
+    addMaterialAnchor(m.slug, m.markerIndex);      // kartu (0/1/2)
+    addMaterialAnchor(m.slug, m.markerIndex + 3);  // ilustrasi flipbook (3/4/5)
   });
 
   placedHolder = new THREE.Group();
@@ -180,6 +189,8 @@ async function initAR() {
     return fail('Tidak bisa mengakses kamera. Pastikan izin kamera diberikan lalu muat ulang.');
   }
   sizeRenderers();
+  // MindAR bisa menata ulang video/kanvas saat metadata siap → paksa cover lagi beberapa saat kemudian
+  setTimeout(sizeRenderers, 300); setTimeout(sizeRenderers, 900);
   renderer.setAnimationLoop(() => {
     const dt = clock.getDelta();
     if (playing) for (const mx of mixers) mx.update(dt);
@@ -188,13 +199,26 @@ async function initAR() {
     if (labelsOn) labelRenderer.render(scene, camera);
   });
   window.addEventListener('resize', sizeRenderers);
+  window.addEventListener('orientationchange', () => setTimeout(sizeRenderers, 250));
   startQRLoop();
   enableDragRotate();
-  [hint, chips, chipHelp, toolbar].forEach((n) => n.style.display = '');
+  [hint, dock].forEach((n) => n.style.display = '');
   if (activeSlug) preselectChip(activeSlug);
 }
 
+// Paksa video + kanvas MindAR menutupi layar penuh (cover), tahan terhadap sizing letterbox bawaan.
+function coverEl(elm) {
+  if (!elm) return;
+  const s = elm.style;
+  s.setProperty('position', 'absolute', 'important');
+  s.setProperty('top', '0', 'important'); s.setProperty('left', '0', 'important');
+  s.setProperty('width', '100%', 'important'); s.setProperty('height', '100%', 'important');
+  s.setProperty('object-fit', 'cover', 'important');
+  s.setProperty('margin', '0', 'important'); s.setProperty('transform', 'none', 'important');
+}
 function sizeRenderers() {
+  coverEl(mindarThree && mindarThree.video);
+  coverEl(renderer && renderer.domElement);
   if (labelRenderer) labelRenderer.setSize(container.clientWidth, container.clientHeight);
 }
 
@@ -242,7 +266,7 @@ function startQRLoop() { setInterval(scanQR, 450); }
 function scanQR() {
   const v = mindarThree && mindarThree.video;
   if (!v || v.readyState < 2 || !v.videoWidth || !window.jsQR) return;
-  const w = 260, h = Math.round(260 * v.videoHeight / v.videoWidth) || 200;
+  const w = Math.min(v.videoWidth, 480), h = Math.round(w * v.videoHeight / v.videoWidth) || 360;
   qCanvas.width = w; qCanvas.height = h;
   qCtx.drawImage(v, 0, 0, w, h);
   let img; try { img = qCtx.getImageData(0, 0, w, h); } catch (e) { return; }
@@ -302,9 +326,9 @@ function setActive(slug) {
   btnView.href = '/v/' + slug + '/';
   preselectChip(slug);
   const fresh = buildPanel(MATERI[slug]);
-  if (panel) panel.replaceWith(fresh); else app.appendChild(fresh);
+  fresh.classList.add('ar-sheet', 'is-collapsed'); // kartu bottom-sheet di dok, mulai tertutup
+  if (panel) panel.replaceWith(fresh); else dock.prepend(fresh);
   panel = fresh;
-  panel.classList.add('is-collapsed'); // mulai tertutup di AR agar tak menutupi
 }
 function preselectChip(slug) {
   chips.querySelectorAll('.ar-chip').forEach((c) => c.classList.toggle('is-on', c.dataset.slug === slug));
@@ -321,7 +345,7 @@ function fail(msg) {
 }
 
 // hook verifikasi (tak mengganggu pengguna)
-window.__arDebug = { placeMarkerless, matchQR, get mixers() { return mixers; }, get scene() { return scene; } };
+window.__arDebug = { placeMarkerless, matchQR, get mixers() { return mixers; }, get scene() { return scene; }, get activeSlug() { return activeSlug; } };
 
 // ---------- mulai ----------
 start.querySelector('.ar-start-btn').addEventListener('click', () => {

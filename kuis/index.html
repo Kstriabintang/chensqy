@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kuis Getaran &amp; Gelombang | chensqy</title>
+<meta name="description" content="Kuis interaktif getaran dan gelombang: 20 soal pilihan ganda, skor otomatis (maks 100), lengkap dengan kunci jawaban dan pembahasan tiap soal.">
+<meta name="theme-color" content="#123a74">
+<link rel="icon" href="/assets/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Kuis Getaran & Gelombang">
+<meta property="og:description" content="20 soal pilihan ganda, skor otomatis (maks 100), lengkap kunci & pembahasan.">
+<meta property="og:image" content="https://chensqy.my.id/assets/og-image.jpg">
+<style>
+:root{
+  --font:"Inter","Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --accent:#ff9f2e; --accent2:#ffc061; --brand:#123a74;
+  --ink:#1c2b40; --sub:#51637b; --card:#ffffff; --line:rgba(20,45,90,.12);
+  --bg1:#eef4fc; --bg2:#d6e3f4; --shadow:0 12px 34px rgba(20,45,90,.12);
+  --sel:#eaf2ff; --sel-brd:#1f6fd0;
+  --ok-bg:rgba(31,156,77,.10); --ok-brd:rgba(31,156,77,.5);
+  --no-bg:rgba(226,60,60,.09); --no-brd:rgba(226,60,60,.45);
+  --track:rgba(20,45,90,.12);
+}
+:root[data-theme="gelap"]{
+  --ink:#eaf1fb; --sub:#aab8cf; --brand:#8fb4ee; --card:#0f1a2e; --line:rgba(255,255,255,.10);
+  --bg1:#132443; --bg2:#070d18; --shadow:0 12px 34px rgba(0,0,0,.45);
+  --sel:rgba(31,111,208,.22); --sel-brd:#4f8fe0;
+  --ok-bg:rgba(31,156,77,.16); --ok-brd:rgba(66,211,146,.5);
+  --no-bg:rgba(226,60,60,.16); --no-brd:rgba(255,120,120,.5);
+  --track:rgba(255,255,255,.14);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:var(--font); color:var(--ink); min-height:100vh; -webkit-tap-highlight-color:transparent;
+  background:radial-gradient(130% 100% at 50% 0%, var(--bg1) 0%, var(--bg2) 72%) fixed;}
+.topbar{display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:max(10px,env(safe-area-inset-top)) clamp(14px,4vw,26px) 10px; max-width:760px; margin:0 auto}
+.brand{display:flex; align-items:center; gap:9px; font-weight:800; color:var(--ink); text-decoration:none}
+.brand img{width:30px; height:30px; border-radius:8px}
+.tbtn{width:42px; height:42px; border-radius:12px; border:1px solid var(--line); background:var(--card);
+  color:var(--ink); cursor:pointer; display:grid; place-items:center; box-shadow:var(--shadow)}
+.tbtn svg{width:22px; height:22px; fill:currentColor}
+
+.k-wrap{max-width:680px; margin:0 auto; padding:8px clamp(14px,4vw,26px) 60px}
+.k-hero{text-align:center; margin:14px 0 20px}
+.k-badge{display:inline-block; font-weight:800; font-size:12.5px; letter-spacing:.3px; color:#a9600a;
+  background:rgba(255,159,46,.14); border:1px solid rgba(255,159,46,.4); padding:5px 13px; border-radius:999px}
+:root[data-theme="gelap"] .k-badge{color:var(--accent)}
+.k-hero h1{margin:12px 0 8px; font-size:clamp(23px,5.4vw,32px); letter-spacing:-.4px}
+.k-hero p{margin:0 auto; max-width:520px; color:var(--sub); font-size:14.5px; line-height:1.6}
+
+.k-card{background:var(--card); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow); padding:20px}
+
+.k-form{display:flex; flex-direction:column; gap:16px}
+.k-field{display:flex; flex-direction:column; gap:7px}
+.k-field span{font-weight:700; font-size:13.5px}
+.k-field input{font-family:var(--font); font-size:16px; color:var(--ink); background:transparent;
+  border:1.5px solid var(--line); border-radius:12px; padding:13px 14px; outline:none; transition:border-color .15s}
+.k-field input:focus{border-color:var(--sel-brd)}
+.k-err{color:#e23c3c; font-size:12.5px; font-style:normal; min-height:14px}
+
+.k-btn{font-family:var(--font); font-weight:800; font-size:15.5px; border-radius:13px; padding:14px 20px;
+  cursor:pointer; border:1px solid transparent; min-height:50px; display:inline-flex; align-items:center; justify-content:center; gap:8px; text-decoration:none}
+.k-btn-primary{color:#3a2500; background:linear-gradient(180deg,var(--accent2),var(--accent)); box-shadow:0 8px 20px rgba(255,159,46,.34)}
+.k-btn-primary:active{transform:scale(.985)}
+.k-btn-ghost{color:var(--brand); background:var(--card); border-color:var(--line)}
+.k-btn:disabled{opacity:.4; cursor:not-allowed}
+.k-back{display:block; text-align:center; margin-top:2px; color:var(--sub); text-decoration:none; font-size:13.5px; font-weight:600}
+
+/* progres */
+.k-quiztop{margin:6px 0 14px}
+.k-prog{height:8px; border-radius:999px; background:var(--track); overflow:hidden}
+.k-prog-bar{height:100%; border-radius:999px; background:linear-gradient(90deg,var(--accent2),var(--accent)); transition:width .25s ease}
+.k-progtext{display:flex; justify-content:space-between; margin-top:8px; font-size:12.5px; color:var(--sub)}
+.k-progtext b{color:var(--ink)}
+
+/* kartu soal */
+.k-qcard{padding:22px 20px}
+.k-qnum{font-size:12px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:var(--accent)}
+.k-qtext{margin:8px 0 4px; font-size:17px; line-height:1.55; font-weight:600}
+.k-fig{margin:14px 0 4px; background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px; text-align:center}
+.k-fig svg{width:100%; height:auto; max-height:210px}
+.k-fig-sm svg{max-height:150px}
+
+.k-opts{display:flex; flex-direction:column; gap:10px; margin-top:16px}
+.k-opt{display:flex; align-items:center; gap:12px; text-align:left; width:100%; min-height:52px;
+  padding:12px 14px; border-radius:13px; border:1.5px solid var(--line); background:var(--card); color:var(--ink);
+  font-family:var(--font); font-size:15px; line-height:1.4; cursor:pointer; transition:border-color .12s, background .12s}
+.k-opt:hover{border-color:var(--sel-brd)}
+.k-opt.is-sel{border-color:var(--sel-brd); background:var(--sel)}
+.k-optl{flex:0 0 auto; width:28px; height:28px; border-radius:8px; display:grid; place-items:center;
+  font-weight:800; font-size:13.5px; background:var(--track); color:var(--ink)}
+.k-opt.is-sel .k-optl{background:var(--sel-brd); color:#fff}
+.k-optt{flex:1}
+
+.k-nav{display:flex; gap:12px; margin-top:18px}
+.k-nav .k-btn{flex:1}
+
+/* hasil */
+.k-result{text-align:center}
+.k-rident{font-weight:700; font-size:15px; color:var(--ink)}
+.k-rident span{color:var(--sub)}
+.k-score{display:flex; align-items:center; gap:20px; justify-content:center; margin:18px 0; flex-wrap:wrap}
+.k-ring{--v:0; width:132px; height:132px; border-radius:50%; flex:0 0 auto;
+  background:conic-gradient(var(--gc) calc(var(--v)*1%), var(--track) 0); display:grid; place-items:center}
+.k-ring-in{width:100px; height:100px; border-radius:50%; background:var(--card); display:grid; place-items:center; line-height:1}
+.k-ring-in b{font-size:34px; font-weight:800}
+.k-ring-in small{font-size:13px; color:var(--sub)}
+.k-scoremeta{text-align:left}
+.k-grade{font-size:20px; font-weight:800}
+.k-benar{margin-top:4px; color:var(--sub); font-size:14.5px}
+.k-benar b{color:var(--ink)}
+.k-rule{margin-top:2px; color:var(--sub); font-size:12.5px}
+.k-ractions{display:flex; gap:12px; margin-top:6px}
+.k-ractions .k-btn{flex:1}
+
+/* review */
+.k-review{margin-top:24px}
+.k-revh{margin:0 0 4px; font-size:19px}
+.k-revsub{margin:0 0 14px; color:var(--sub); font-size:13.5px}
+.k-ritem{background:var(--card); border:1px solid var(--line); border-left-width:4px; border-radius:14px; padding:16px 16px; margin-bottom:12px; box-shadow:var(--shadow)}
+.k-ritem.is-ok{border-left-color:#1f9c4d}
+.k-ritem.is-no{border-left-color:#e23c3c}
+.k-rq{display:flex; gap:10px; font-size:15px; line-height:1.5; align-items:flex-start}
+.k-rmark{flex:0 0 auto; width:24px; height:24px; border-radius:50%; display:grid; place-items:center; font-weight:800; font-size:14px; color:#fff}
+.is-ok .k-rmark{background:#1f9c4d}
+.is-no .k-rmark{background:#e23c3c}
+.k-ropts{list-style:none; margin:12px 0 0; padding:0; display:flex; flex-direction:column; gap:6px}
+.k-ropts li{display:flex; gap:9px; align-items:flex-start; font-size:14px; line-height:1.45; padding:8px 10px; border-radius:9px; color:var(--sub)}
+.k-ropts li .k-optl{width:24px; height:24px; font-size:12px}
+.k-ropts li.k-correct{background:var(--ok-bg); border:1px solid var(--ok-brd); color:var(--ink); font-weight:600}
+.k-ropts li.k-wrong{background:var(--no-bg); border:1px solid var(--no-brd); color:var(--ink)}
+.k-ropts li em{font-style:normal; font-weight:700; font-size:12px; opacity:.85}
+.k-note{margin-top:12px; font-size:13.5px; line-height:1.55; color:var(--sub); background:rgba(255,159,46,.08);
+  border:1px solid rgba(255,159,46,.28); border-radius:10px; padding:10px 12px}
+.k-note b{color:var(--ink)}
+.k-note-empty{background:var(--no-bg); border-color:var(--no-brd)}
+
+@media (max-width:460px){
+  .k-scoremeta{text-align:center}
+  .k-score{gap:14px}
+}
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <a class="brand" href="/"><img src="/assets/logo.png" alt=""> chensqy</a>
+    <button class="tbtn" id="theme" type="button" aria-label="Mode terang / gelap"></button>
+  </div>
+  <div id="app"></div>
+
+<script>
+(function(){
+  var KEY='chensqy-theme', root=document.documentElement, btn=document.getElementById('theme');
+  var MOON='<svg viewBox="0 0 24 24"><path d="M20 14a8 8 0 1 1-10-10 8 8 0 0 0 10 10z"/></svg>';
+  var SUN='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.5"/><g stroke="currentColor" stroke-width="2" fill="none"><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></g></svg>';
+  function get(){ try{return localStorage.getItem(KEY)||'terang'}catch(e){return 'terang'} }
+  function apply(t){ root.setAttribute('data-theme', t); btn.innerHTML = t==='gelap'?SUN:MOON; }
+  apply(get());
+  btn.addEventListener('click', function(){ var t=get()==='gelap'?'terang':'gelap'; try{localStorage.setItem(KEY,t)}catch(e){} apply(t); });
+})();
+</script>
+<script type="module" src="/js/kuis.js?v=3"></script>
+</body>
+</html>

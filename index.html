@@ -74,6 +74,18 @@ header{display:flex; align-items:center; justify-content:space-between; gap:12px
 .qrnote{font-size:11.5px; color:var(--sub); text-align:center; margin-top:6px; line-height:1.4}
 footer{margin-top:44px; text-align:center; color:var(--sub); font-size:13px; line-height:1.7}
 footer a{color:var(--brand); font-weight:700; text-decoration:none}
+.sec-h{margin:40px 0 4px; font-size:clamp(19px,4vw,24px); letter-spacing:-.3px}
+.sec-sub{margin:0 0 16px; color:var(--sub); font-size:14px}
+.feats{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:16px}
+.feat{display:flex; align-items:center; gap:16px; padding:18px 20px; border-radius:18px; text-decoration:none;
+  background:var(--card); border:1px solid var(--line); box-shadow:var(--shadow); color:var(--ink); transition:transform .15s ease, box-shadow .15s ease}
+.feat:hover{transform:translateY(-3px)}
+.feat-ic{flex:0 0 auto; width:56px; height:56px; border-radius:15px; display:grid; place-items:center; font-size:28px;
+  background:linear-gradient(180deg,#ffedcf,#ffd79a)}
+.feat-ic-q{background:linear-gradient(180deg,#d9ecff,#b7d6fb)}
+.feat h3{margin:0 0 4px; font-size:18px}
+.feat p{margin:0; color:var(--sub); font-size:13.5px; line-height:1.5}
+.feat-go{margin-left:auto; font-size:22px; color:var(--brand); font-weight:800; flex:0 0 auto}
 </style>
 </head>
 <body>
@@ -134,6 +146,27 @@ footer a{color:var(--brand); font-weight:700; text-decoration:none}
     </article>
   </section>
   <p class="qrnote">Ingin dicetak? Buka <a href="/qr/" style="color:var(--brand);font-weight:700">lembar QR untuk dicetak</a> berisi ketiga kode.</p>
+
+  <h2 class="sec-h">Belajar &amp; Latihan</h2>
+  <p class="sec-sub">Baca materinya sebagai buku digital, lalu uji pemahamanmu lewat kuis.</p>
+  <section class="feats">
+    <a class="feat" href="/buku/">
+      <div class="feat-ic">📖</div>
+      <div>
+        <h3>Buku Digital</h3>
+        <p>Baca materi getaran &amp; gelombang seperti membuka buku — flipbook interaktif.</p>
+      </div>
+      <span class="feat-go">→</span>
+    </a>
+    <a class="feat" href="/kuis/">
+      <div class="feat-ic feat-ic-q">📝</div>
+      <div>
+        <h3>Kuis</h3>
+        <p>20 soal pilihan ganda, nilai otomatis (maks 100), lengkap kunci &amp; pembahasan.</p>
+      </div>
+      <span class="feat-go">→</span>
+    </a>
+  </section>
 
   <footer>
     Materi ajar fisika 3D · <a href="https://chensqy.my.id">chensqy.my.id</a><br>

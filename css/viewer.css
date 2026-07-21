@@ -135,10 +135,12 @@ a.v-btn { text-decoration: none; }
 @keyframes vspin { to { transform: rotate(360deg); } }
 
 /* ============ AR (kamera) ============ */
-.ar-root, .ar-container { position: fixed; inset: 0; background: #05070c; }
-.ar-container video, .ar-container canvas, .ar-container .ar-labels {
-  position: absolute !important; inset: 0; width: 100% !important; height: 100% !important; object-fit: cover;
+.ar-root, .ar-container { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; background: #05070c; }
+.ar-container video, .ar-container canvas {
+  position: absolute !important; top: 0 !important; left: 0 !important;
+  width: 100% !important; height: 100% !important; object-fit: cover !important; margin: 0 !important;
 }
+.ar-labels { position: absolute; inset: 0; pointer-events: none; }
 .ar-container canvas { touch-action: none; }
 .ar-top {
   position: fixed; z-index: 7; top: max(10px, env(safe-area-inset-top)); left: 10px; right: 10px;
@@ -155,7 +157,7 @@ a.v-btn { text-decoration: none; }
   background: rgba(18,58,116,.66); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
 }
 .ar-hint {
-  position: fixed; z-index: 6; left: 50%; top: 74px; transform: translateX(-50%);
+  position: fixed; z-index: 6; left: 50%; top: calc(max(10px, env(safe-area-inset-top)) + 52px); transform: translateX(-50%);
   color: #fff; font-size: 13px; padding: 9px 16px; border-radius: 999px; white-space: nowrap; max-width: 92vw;
   background: rgba(10,16,28,.55); border: 1px solid rgba(255,255,255,.16);
   backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: opacity .35s ease;
@@ -163,22 +165,34 @@ a.v-btn { text-decoration: none; }
 .ar-hint b { color: #ffd18a; }
 .ar-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #42d392; margin-right: 6px; animation: arpulse 1.4s infinite; }
 @keyframes arpulse { 0%,100% { opacity: 1 } 50% { opacity: .3 } }
-.ar-chips {
-  position: fixed; z-index: 6; left: 50%; bottom: calc(max(12px, env(safe-area-inset-bottom)) + 44px);
-  transform: translateX(-50%); display: flex; gap: 8px; max-width: 96vw; overflow-x: auto; padding: 4px;
+
+/* dok kontrol bawah: satu kolom rapi (panel Keterangan · help · chips · toolbar) — anti tumpang-tindih */
+.ar-dock {
+  position: fixed; z-index: 6; left: 50%; transform: translateX(-50%);
+  bottom: calc(env(safe-area-inset-bottom) + 12px);
+  width: min(560px, calc(100vw - 20px));
+  display: flex; flex-direction: column; align-items: stretch; gap: 10px;
+  pointer-events: none;
 }
+.ar-dock > * { pointer-events: auto; }
+.ar-chiphelp { margin: 0; color: rgba(255,255,255,.9); font-size: 11.5px; text-align: center; text-shadow: 0 1px 4px rgba(0,0,0,.7); }
+.ar-chips { display: flex; gap: 8px; overflow-x: auto; padding: 2px; justify-content: center; scrollbar-width: none; }
+.ar-chips::-webkit-scrollbar { display: none; }
 .ar-chip {
   flex: 0 0 auto; padding: 9px 15px; border-radius: 999px; font-family: var(--font); font-weight: 700; font-size: 13px;
-  color: #fff; background: rgba(10,16,28,.55); border: 1px solid rgba(255,255,255,.2); cursor: pointer;
+  color: #fff; background: rgba(10,16,28,.6); border: 1px solid rgba(255,255,255,.2); cursor: pointer; white-space: nowrap;
   backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
 }
 .ar-chip.is-on { background: linear-gradient(180deg,#ffc061,#ff9f2e); color: #3a2500; border-color: transparent; }
-.ar-chiphelp {
-  position: fixed; z-index: 6; left: 50%; bottom: calc(max(12px, env(safe-area-inset-bottom)) + 12px);
-  transform: translateX(-50%); color: rgba(255,255,255,.82); font-size: 11.5px; text-align: center; max-width: 92vw;
-  text-shadow: 0 1px 4px rgba(0,0,0,.6);
+/* toolbar di dalam dok: baris mendatar & statis (bukan fixed) */
+.ar-toolbar {
+  position: static !important; top: auto !important; right: auto !important; transform: none !important;
+  flex-direction: row !important; justify-content: center; gap: 10px;
 }
-.ar-toolbar { top: auto !important; bottom: calc(max(12px, env(safe-area-inset-bottom)) + 78px) !important; transform: none !important; }
+.ar-toolbar .v-btn { width: 48px; height: 48px; }
+/* panel Keterangan = kartu paling atas di dok; mekar ke atas, tak pernah menutupi tombol */
+.v-panel.ar-sheet { position: static !important; left: auto; right: auto; bottom: auto; transform: none; width: 100%; max-width: 100%; }
+.v-panel.ar-sheet:not(.is-collapsed) .v-panel-body { max-height: min(36vh, 340px); }
 .ar-toast {
   position: fixed; z-index: 8; left: 50%; top: 120px; transform: translateX(-50%) translateY(-8px);
   background: rgba(10,16,28,.82); color: #fff; padding: 10px 18px; border-radius: 12px; font-size: 13.5px; font-weight: 700;
@@ -202,10 +216,11 @@ a.v-btn { text-decoration: none; }
 }
 .ar-start-alt { display: block; margin-top: 16px; color: #8fb4ee; text-decoration: none; font-size: 14px; }
 
-/* HP portrait: toolbar mendatar di bawah-kanan, panel jadi bottom-sheet */
+/* HP portrait: penampil 3D biasa (/v/*) — toolbar mendatar bawah-kanan, panel bottom-sheet.
+   Dikecualikan untuk AR (.ar-toolbar/.ar-sheet) yang memakai tata letak dok. */
 @media (max-width: 640px) {
-  .v-toolbar { top: auto; bottom: calc(max(12px, env(safe-area-inset-bottom)) + 4px); right: 10px; transform: none; flex-direction: row; }
+  .v-toolbar:not(.ar-toolbar) { top: auto; bottom: calc(max(12px, env(safe-area-inset-bottom)) + 4px); right: 10px; transform: none; flex-direction: row; }
   .v-btn { width: 44px; height: 44px; }
-  .v-panel { left: 10px; right: 10px; width: auto; bottom: calc(max(12px, env(safe-area-inset-bottom)) + 62px); }
-  .v-panel-body { max-height: 34vh; }
+  .v-panel:not(.ar-sheet) { left: 10px; right: 10px; width: auto; bottom: calc(max(12px, env(safe-area-inset-bottom)) + 62px); }
+  .v-panel:not(.ar-sheet) .v-panel-body { max-height: 34vh; }
 }

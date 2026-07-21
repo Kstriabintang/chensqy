@@ -7,8 +7,8 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
-import { MATERI, slugFromLocation, getSpeed, setSpeed, SPEEDS, THEME_KEY } from '/js/materi.js?v=2';
-import { el, ICONS, setIcon, toolBtn, buildLabelEl, buildPanel } from '/js/ui.js?v=2';
+import { MATERI, slugFromLocation, getSpeed, setSpeed, SPEEDS, THEME_KEY } from '/js/materi.js?v=3';
+import { el, ICONS, setIcon, toolBtn, buildLabelEl, buildPanel } from '/js/ui.js?v=3';
 
 const SLUG = window.MATERI_SLUG || slugFromLocation();
 const CFG = window.VIEWER_CONFIG || MATERI[SLUG] || {};

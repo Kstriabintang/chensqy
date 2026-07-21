@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Buku Digital — Getaran & Gelombang | chensqy</title>
+<meta name="description" content="Buku digital (flipbook) materi getaran dan gelombang — baca seperti membuka buku, lengkap dengan ilustrasi dan latihan.">
+<meta name="theme-color" content="#123a74">
+<link rel="icon" href="/assets/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="/assets/favicon-32.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Buku Digital — Getaran & Gelombang">
+<meta property="og:description" content="Flipbook materi getaran dan gelombang, baca seperti membuka buku.">
+<meta property="og:image" content="https://chensqy.my.id/assets/og-image.jpg">
+<style>
+:root{
+  --font:"Inter","Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --accent:#ff9f2e; --accent2:#ffc061; --brand:#123a74;
+  --ink:#1c2b40; --sub:#51637b; --bar:#ffffff; --line:rgba(20,45,90,.12);
+  --bg:#0b1424; --shadow:0 6px 20px rgba(20,45,90,.16);
+}
+:root[data-theme="gelap"]{
+  --ink:#eaf1fb; --sub:#aab8cf; --brand:#8fb4ee; --bar:#0f1a2e; --line:rgba(255,255,255,.10);
+  --bg:#05070c; --shadow:0 6px 20px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box}
+html,body{margin:0; height:100%}
+body{font-family:var(--font); color:var(--ink); background:var(--bg);
+  display:flex; flex-direction:column; height:100vh; height:100dvh; -webkit-tap-highlight-color:transparent}
+.bar{
+  flex:0 0 auto; display:flex; align-items:center; gap:12px;
+  padding:max(8px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left));
+  background:var(--bar); border-bottom:1px solid var(--line); box-shadow:var(--shadow); z-index:2;
+}
+.ic{width:40px; height:40px; flex:0 0 auto; border-radius:11px; border:1px solid var(--line); background:transparent;
+  color:var(--ink); cursor:pointer; display:grid; place-items:center; text-decoration:none}
+.ic svg{width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:2.1; stroke-linecap:round; stroke-linejoin:round}
+.title{font-weight:800; font-size:16px; display:flex; align-items:center; gap:8px; min-width:0}
+.title b{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.title .em{font-size:19px}
+.spacer{flex:1}
+.newtab{font-size:12.5px; font-weight:700; color:var(--brand); text-decoration:none; padding:8px 12px; border-radius:10px;
+  border:1px solid var(--line); white-space:nowrap}
+.stage{flex:1 1 auto; position:relative; background:var(--bg); min-height:0}
+.stage iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
+.fallback{position:absolute; inset:0; display:grid; place-content:center; gap:12px; justify-items:center; text-align:center;
+  color:var(--sub); font-size:14px; padding:24px}
+.fallback a{color:#3a2500; background:linear-gradient(180deg,var(--accent2),var(--accent)); text-decoration:none;
+  font-weight:800; padding:12px 22px; border-radius:12px}
+@media (max-width:520px){ .newtab span{display:none} }
+</style>
+</head>
+<body>
+  <header class="bar">
+    <a class="ic" href="/" aria-label="Kembali ke beranda" title="Kembali">
+      <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+    </a>
+    <div class="title"><span class="em">📖</span><b>Buku Digital</b></div>
+    <div class="spacer"></div>
+    <a class="newtab" id="newtab" href="https://heyzine.com/flip-book/c68d451a58.html" target="_blank" rel="noopener"><span>Buka di tab baru </span>↗</a>
+    <button class="ic" id="theme" type="button" aria-label="Mode terang / gelap"></button>
+  </header>
+
+  <main class="stage">
+    <div class="fallback" id="fallback">
+      <div>Memuat buku digital…</div>
+      <a href="https://heyzine.com/flip-book/c68d451a58.html" target="_blank" rel="noopener">Buka langsung ↗</a>
+    </div>
+    <iframe id="book"
+      src="https://heyzine.com/flip-book/c68d451a58.html"
+      title="Buku digital getaran dan gelombang"
+      allow="fullscreen; clipboard-write"
+      allowfullscreen
+      loading="eager"></iframe>
+  </main>
+
+<script>
+(function(){
+  var KEY='chensqy-theme', root=document.documentElement, btn=document.getElementById('theme');
+  var MOON='<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20 14a8 8 0 1 1-10-10 8 8 0 0 0 10 10z"/></svg>';
+  var SUN='<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="12" cy="12" r="4.5"/><g stroke="currentColor" stroke-width="2" fill="none"><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9L17 7M7 17l-2.1 2.1"/></g></svg>';
+  function get(){ try{return localStorage.getItem(KEY)||'terang'}catch(e){return 'terang'} }
+  function apply(t){ root.setAttribute('data-theme', t); btn.innerHTML = t==='gelap'?SUN:MOON; }
+  apply(get());
+  btn.addEventListener('click', function(){ var t=get()==='gelap'?'terang':'gelap'; try{localStorage.setItem(KEY,t)}catch(e){} apply(t); });
+  // sembunyikan fallback begitu iframe termuat
+  var fb=document.getElementById('fallback'), bk=document.getElementById('book');
+  bk.addEventListener('load', function(){ fb.style.display='none'; });
+  setTimeout(function(){ fb.style.display='none'; }, 6000);
+})();
+</script>
+</body>
+</html>
