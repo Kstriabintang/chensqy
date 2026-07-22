@@ -98,6 +98,12 @@ body{font-family:var(--font); color:var(--ink); min-height:100vh; -webkit-tap-hi
 
 .k-nav{display:flex; gap:12px; margin-top:18px}
 .k-nav .k-btn{flex:1}
+.k-unans{margin-top:14px; background:var(--no-bg); border:1px solid var(--no-brd); border-radius:12px; padding:12px 14px; font-size:13.5px; line-height:1.7; color:var(--ink)}
+.k-unans b{color:#c0392b}
+:root[data-theme="gelap"] .k-unans b{color:#ff8a8a}
+.k-unans-chips{display:inline-flex; flex-wrap:wrap; gap:6px; margin-left:4px; vertical-align:middle}
+.k-unans-chip{width:30px; height:30px; border-radius:8px; border:1px solid var(--no-brd); background:var(--card); color:var(--ink); font-weight:700; font-size:13px; cursor:pointer}
+.k-unans-chip:hover{background:var(--no-bg)}
 
 /* hasil */
 .k-result{text-align:center}
@@ -114,6 +120,9 @@ body{font-family:var(--font); color:var(--ink); min-height:100vh; -webkit-tap-hi
 .k-benar{margin-top:4px; color:var(--sub); font-size:14.5px}
 .k-benar b{color:var(--ink)}
 .k-rule{margin-top:2px; color:var(--sub); font-size:12.5px}
+.k-save{margin-top:8px; font-size:12.5px; min-height:16px; color:var(--sub)}
+.k-save-ok{color:#1f9c4d; font-weight:700}
+.k-save-no{color:#e23c3c; font-weight:700}
 .k-ractions{display:flex; gap:12px; margin-top:6px}
 .k-ractions .k-btn{flex:1}
 
@@ -163,6 +172,6 @@ body{font-family:var(--font); color:var(--ink); min-height:100vh; -webkit-tap-hi
   btn.addEventListener('click', function(){ var t=get()==='gelap'?'terang':'gelap'; try{localStorage.setItem(KEY,t)}catch(e){} apply(t); });
 })();
 </script>
-<script type="module" src="/js/kuis.js?v=3"></script>
+<script type="module" src="/js/kuis.js?v=4"></script>
 </body>
 </html>

@@ -1,6 +1,9 @@
 // Kuis Getaran & Gelombang — chensqy.my.id
-// Input nama + kelas · 20 soal · tiap soal benar = 5 poin (maks 100) · salah -> tampil jawaban benar + pembahasan.
-// Kunci diperbaiki di no.14 (D/Rapatan) sesuai konsep; typo opsi dari rubrik dibersihkan.
+// Input nama + kelas + sekolah · 20 soal · tiap benar = 5 poin (maks 100) · salah -> jawaban benar + pembahasan.
+// Wajib jawab SEMUA soal sebelum bisa mengumpulkan. Hasil disimpan ke Supabase (admin bisa memeriksa).
+// Kunci diperbaiki di no.14 (D/Rapatan); typo opsi dari rubrik dibersihkan.
+
+import { SUPABASE_URL, SUPABASE_ANON_KEY, isConfigured } from '/js/config.js?v=4';
 
 const POINTS_PER = 5; // 20 x 5 = 100
 
@@ -40,28 +43,22 @@ export const QUESTIONS = [
   { q: "Sebuah jembatan gantung bergerak bolak-balik melalui titik kesetimbangannya akibat hembusan angin kencang. Gerak bolak-balik benda melalui titik setimbangnya tersebut disebut...",
     opts: ["Getaran", "Gelombang", "Frekuensi", "Amplitudo"], correct: 0,
     pembahasan: "Getaran adalah gerak bolak-balik suatu benda melalui titik kesetimbangannya, seperti badan jembatan gantung yang bergerak bolak-balik akibat hembusan angin kencang." },
-
   { q: "Saat kamu duduk di ayunan taman dan mendorongnya, jarak terjauh ayunan itu bergerak menjauh dari posisi diamnya disebut...",
     opts: ["Periode", "Amplitudo", "Panjang gelombang", "Cepat rambat"], correct: 1,
     pembahasan: "Amplitudo adalah simpangan terjauh yang dialami benda saat bergetar, diukur dari posisi setimbangnya." },
-
   { q: "Sebuah alat sensor mencatat bahwa dalam 1 detik, sebuah pegas bergetar sebanyak 5 kali. Besaran yang menyatakan banyaknya getaran tiap detik ini disebut ...",
     opts: ["Frekuensi", "Periode", "Amplitudo", "Getaran"], correct: 0,
     pembahasan: "Frekuensi adalah besaran yang menyatakan banyaknya getaran yang terjadi dalam waktu satu detik." },
-
   { q: "Jika frekuensi getaran suatu benda adalah 5 Hz, maka periode getaran benda tersebut adalah...",
     opts: ["0,2 sekon", "5 sekon", "1 sekon", "10 sekon"], correct: 0,
     pembahasan: "Periode T = 1/f = 1/5 Hz = 0,2 sekon." },
-
   { q: "Berikut adalah beberapa peristiwa dalam kehidupan sehari-hari. Manakah yang merupakan contoh getaran?",
     opts: ["Ombak di lautan", "Cahaya lampu yang menerangi ruangan", "Senar gitar yang dipetik", "Bunyi gema di dalam gua"], correct: 2,
     pembahasan: "Getaran adalah gerak bolak-balik benda melalui titik setimbangnya, contohnya senar gitar yang dipetik. Ombak, cahaya, dan gema merupakan peristiwa yang merambat (gelombang), bukan getaran." },
-
   { q: "Perhatikan gambar lintasan ayunan bandul berikut. Titik A dan B adalah simpangan terjauh di kedua sisi, dan O adalah titik setimbang. Lintasan yang menunjukkan satu getaran penuh adalah...",
     fig: "bandulPath",
     opts: ["B–A–B–O–B", "A–B–A–O–A", "A–O–B–O–A", "O–A–B–A–O"], correct: 2,
     pembahasan: "Satu getaran penuh dimulai dan diakhiri pada titik yang sama setelah melewati kedua simpangan terjauh, yaitu lintasan A–O–B–O–A." },
-
   { q: "Ketika senar gitar dipetik lebih keras, amplitudo getarannya membesar tetapi frekuensinya tidak berubah. Pengaruh amplitudo dan frekuensi terhadap bunyi gitar yang tepat adalah...",
     opts: [
       "Amplitudo memengaruhi kekerasan (kenyaringan) bunyi, sedangkan frekuensi memengaruhi tinggi rendahnya nada",
@@ -69,7 +66,6 @@ export const QUESTIONS = [
       "Amplitudo dan frekuensi sama-sama menentukan tinggi rendahnya nada",
       "Amplitudo dan frekuensi tidak berpengaruh terhadap bunyi yang dihasilkan"], correct: 0,
     pembahasan: "Amplitudo memengaruhi kekerasan (kenyaringan) bunyi — makin besar amplitudo makin keras — sedangkan frekuensi memengaruhi tinggi rendahnya nada." },
-
   { q: "Seorang nelayan mengamati gabus pelampung yang naik-turun di tempat yang hampir sama saat ombak lewat, namun ombaknya sendiri bergerak menuju pantai. Perbedaan mendasar antara getaran dan gelombang adalah...",
     opts: [
       "Getaran memiliki frekuensi, sedangkan gelombang tidak",
@@ -77,41 +73,33 @@ export const QUESTIONS = [
       "Getaran hanya terjadi pada benda padat",
       "Gelombang tidak memiliki periode"], correct: 1,
     pembahasan: "Getaran hanya gerak bolak-balik di sekitar titik setimbang tanpa memindahkan materi, sedangkan gelombang memindahkan energi. Gabus tetap di tempatnya, tetapi energi ombak merambat menuju pantai." },
-
   { q: "Perhatikan gambar berikut. Berdasarkan bentuknya, gelombang ini termasuk jenis gelombang...",
     fig: "transversal",
     opts: ["Longitudinal", "Transversal", "Mekanik", "Elektromagnetik"], correct: 1,
     pembahasan: "Gambar menunjukkan bentuk gelombang berupa bukit dan lembah (sinusoidal), yang merupakan ciri khas gelombang transversal." },
-
   { q: "Berdasarkan gambar pada soal nomor 9, bagian gelombang yang berada paling tinggi disebut...",
     fig: "transversal",
     opts: ["Lembah gelombang", "Puncak gelombang", "Rapatan", "Renggangan"], correct: 1,
     pembahasan: "Bagian gelombang yang berada paling tinggi disebut puncak gelombang." },
-
   { q: "Berdasarkan gambar pada soal nomor 9, jarak antara dua puncak gelombang yang berurutan disebut...",
     fig: "transversal",
     opts: ["Satu panjang gelombang", "Satu periode", "Satu frekuensi", "Satu amplitudo"], correct: 0,
     pembahasan: "Jarak antara dua puncak (atau dua lembah) yang berurutan disebut satu panjang gelombang (λ)." },
-
   { q: "Jarak antara 4 puncak gelombang yang berurutan pada permukaan air adalah 9 meter. Panjang gelombang tersebut adalah...",
     opts: ["9 m", "4,5 m", "3 m", "2,25 m"], correct: 2,
     pembahasan: "Jarak antara 4 puncak berurutan = 3 panjang gelombang, sehingga panjang gelombang = 9 m ÷ 3 = 3 m." },
-
   { q: "Perhatikan gambar berikut. Gelombang pada gambar memiliki arah getar yang sejajar arah rambatnya, gelombang tersebut termasuk jenis gelombang...",
     fig: "longitudinal",
     opts: ["Longitudinal", "Transversal", "Mekanik", "Elektromagnetik"], correct: 0,
     pembahasan: "Gelombang dengan arah getar partikel medium sejajar (searah) dengan arah rambatnya disebut gelombang longitudinal." },
-
   { q: "Berdasarkan gambar pada soal nomor 13, daerah gelombang di mana partikel-partikel medium saling merapat disebut...",
     fig: "longitudinal",
     opts: ["Renggangan", "Lembah", "Puncak", "Rapatan"], correct: 3,
     pembahasan: "Daerah tempat partikel-partikel medium saling merapat (berdekatan) disebut Rapatan." },
-
   { q: "Berdasarkan gambar pada soal nomor 13, daerah gelombang di mana partikel-partikel medium saling meregang disebut...",
     fig: "longitudinal",
     opts: ["Rapatan", "Renggangan", "Amplitudo", "Puncak"], correct: 1,
     pembahasan: "Daerah gelombang longitudinal tempat partikel-partikel medium saling meregang (berjauhan) disebut renggangan." },
-
   { q: "Perhatikan beberapa contoh peristiwa berikut. Manakah yang merupakan contoh gelombang?",
     opts: [
       "Cahaya matahari yang sampai ke Bumi",
@@ -119,7 +107,6 @@ export const QUESTIONS = [
       "Bandul jam yang diam di titik setimbang",
       "Pegas yang ditekan lalu ditahan"], correct: 0,
     pembahasan: "Cahaya matahari yang sampai ke Bumi merupakan gelombang (elektromagnetik) yang merambat dan memindahkan energi. Pilihan lain bukan peristiwa gelombang yang merambat." },
-
   { q: "Gelombang bunyi yang dihasilkan saat gendang dipukul termasuk gelombang longitudinal karena...",
     opts: [
       "Arah getar partikel medium sejajar (searah) dengan arah rambat gelombangnya",
@@ -127,15 +114,12 @@ export const QUESTIONS = [
       "Gelombang bunyi tidak memerlukan medium untuk merambat",
       "Gelombang bunyi termasuk gelombang elektromagnetik"], correct: 0,
     pembahasan: "Gelombang bunyi termasuk gelombang longitudinal karena arah getar partikel medium sejajar (searah) dengan arah rambat gelombangnya." },
-
   { q: "Sebuah bandul pegas berayun dari titik C ke B memerlukan waktu 0,25 sekon. Jika lintasan C ke B merupakan seperempat getaran penuh, maka periode getaran pegas tersebut adalah...",
     opts: ["0,25 sekon", "0,5 sekon", "1 sekon", "4 sekon"], correct: 2,
     pembahasan: "Lintasan C ke B adalah ¼ getaran penuh, sehingga periode = 4 × 0,25 sekon = 1 sekon." },
-
   { q: "Sebuah bandul bergetar dengan periode 0,5 sekon. Frekuensi getaran bandul tersebut adalah...",
     opts: ["0,25 Hz", "0,5 Hz", "2 Hz", "4 Hz"], correct: 2,
     pembahasan: "Frekuensi f = 1/T = 1/0,5 sekon = 2 Hz." },
-
   { q: "Getaran pada pegas menghasilkan gelombang dengan panjang gelombang 0,4 m dan periode 0,2 sekon. Cepat rambat gelombang pada pegas tersebut adalah...",
     opts: ["0,08 m/s", "0,5 m/s", "2 m/s", "8 m/s"], correct: 2,
     pembahasan: "Cepat rambat gelombang v = λ/T = 0,4 m ÷ 0,2 sekon = 2 m/s." },
@@ -145,8 +129,22 @@ export const QUESTIONS = [
 const el = (t, c) => { const n = document.createElement(t); if (c) n.className = c; return n; };
 const LETTERS = ["A", "B", "C", "D"];
 const app = document.getElementById('app');
+const escapeHtml = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-const state = { name: "", kelas: "", answers: new Array(QUESTIONS.length).fill(null), idx: 0 };
+const state = { nama: "", kelas: "", sekolah: "", answers: new Array(QUESTIONS.length).fill(null), idx: 0, startedAt: 0 };
+
+// ---------- simpan ke Supabase ----------
+async function saveResult(row) {
+  if (!isConfigured()) return { ok: false, skipped: true };
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/hasil_kuis`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify(row),
+    });
+    return { ok: r.ok, status: r.status };
+  } catch (e) { return { ok: false, error: e.message }; }
+}
 
 // ---------- layar mulai ----------
 function screenStart() {
@@ -161,29 +159,34 @@ function screenStart() {
     <form class="k-card k-form" id="k-form" novalidate>
       <label class="k-field">
         <span>Nama lengkap</span>
-        <input id="f-name" type="text" autocomplete="name" placeholder="mis. Ananda Putri" required>
-        <em class="k-err" id="e-name"></em>
+        <input id="f-nama" type="text" autocomplete="name" placeholder="mis. Ananda Putri" required>
+        <em class="k-err" id="e-nama"></em>
       </label>
       <label class="k-field">
         <span>Kelas</span>
         <input id="f-kelas" type="text" autocomplete="off" placeholder="mis. VIII-A" required>
         <em class="k-err" id="e-kelas"></em>
       </label>
+      <label class="k-field">
+        <span>Nama sekolah</span>
+        <input id="f-sekolah" type="text" autocomplete="off" placeholder="mis. MTs Al-Mustaqim" required>
+        <em class="k-err" id="e-sekolah"></em>
+      </label>
       <button class="k-btn k-btn-primary" type="submit">Mulai Kuis →</button>
       <a class="k-back" href="/">← Kembali ke beranda</a>
     </form>`;
   app.appendChild(wrap);
-  const form = document.getElementById('k-form');
-  form.addEventListener('submit', (e) => {
+  document.getElementById('k-form').addEventListener('submit', (e) => {
     e.preventDefault();
-    const nm = document.getElementById('f-name').value.trim();
-    const kl = document.getElementById('f-kelas').value.trim();
+    const nama = document.getElementById('f-nama').value.trim();
+    const kelas = document.getElementById('f-kelas').value.trim();
+    const sekolah = document.getElementById('f-sekolah').value.trim();
     let ok = true;
-    document.getElementById('e-name').textContent = nm ? "" : (ok = false, "Nama wajib diisi.");
-    document.getElementById('e-kelas').textContent = kl ? "" : (ok = false, "Kelas wajib diisi.");
+    document.getElementById('e-nama').textContent = nama ? "" : (ok = false, "Nama wajib diisi.");
+    document.getElementById('e-kelas').textContent = kelas ? "" : (ok = false, "Kelas wajib diisi.");
+    document.getElementById('e-sekolah').textContent = sekolah ? "" : (ok = false, "Nama sekolah wajib diisi.");
     if (!ok) return;
-    state.name = nm; state.kelas = kl;
-    state.answers.fill(null); state.idx = 0;
+    Object.assign(state, { nama, kelas, sekolah, answers: new Array(QUESTIONS.length).fill(null), idx: 0, startedAt: Date.now() });
     screenQuiz();
   });
 }
@@ -191,9 +194,10 @@ function screenStart() {
 // ---------- layar soal (satu per satu) ----------
 function screenQuiz() {
   app.innerHTML = "";
-  const i = state.idx, Q = QUESTIONS[i];
-  const total = QUESTIONS.length;
+  const i = state.idx, Q = QUESTIONS[i], total = QUESTIONS.length;
   const answered = state.answers.filter(a => a !== null).length;
+  const unanswered = state.answers.map((a, k) => a === null ? k : -1).filter(k => k >= 0);
+  const complete = unanswered.length === 0;
 
   const wrap = el('div', 'k-wrap');
   const top = el('div', 'k-quiztop');
@@ -205,7 +209,6 @@ function screenQuiz() {
   const card = el('div', 'k-card k-qcard');
   const fig = Q.fig ? `<div class="k-fig">${FIG[Q.fig]}</div>` : "";
   card.innerHTML = `<div class="k-qnum">Soal ${i + 1}</div><div class="k-qtext">${Q.q}</div>${fig}`;
-
   const opts = el('div', 'k-opts');
   Q.opts.forEach((o, k) => {
     const b = el('button', 'k-opt'); b.type = 'button';
@@ -222,49 +225,64 @@ function screenQuiz() {
   prev.disabled = i === 0;
   prev.addEventListener('click', () => { state.idx = Math.max(0, i - 1); screenQuiz(); });
   nav.appendChild(prev);
-
   if (i < total - 1) {
     const next = el('button', 'k-btn k-btn-primary'); next.type = 'button'; next.textContent = 'Berikutnya →';
     next.addEventListener('click', () => { state.idx = Math.min(total - 1, i + 1); screenQuiz(); });
     nav.appendChild(next);
   } else {
-    const fin = el('button', 'k-btn k-btn-primary'); fin.type = 'button'; fin.textContent = 'Kumpulkan Jawaban ✓';
-    fin.addEventListener('click', () => {
-      const kosong = state.answers.findIndex(a => a === null);
-      if (kosong !== -1) {
-        if (!confirm(`Masih ada ${state.answers.filter(a => a === null).length} soal belum dijawab. Kumpulkan sekarang?`)) { state.idx = kosong; screenQuiz(); return; }
-      }
-      screenResult();
-    });
+    const fin = el('button', 'k-btn k-btn-primary'); fin.type = 'button';
+    fin.textContent = complete ? 'Kumpulkan Jawaban ✓' : `Kurang ${unanswered.length} soal`;
+    fin.disabled = !complete;
+    fin.addEventListener('click', () => { if (complete) screenResult(); });
     nav.appendChild(fin);
   }
   wrap.appendChild(nav);
+
+  // penanda soal belum dijawab — kunci pengumpulan sampai semua terjawab
+  if (!complete) {
+    const warn = el('div', 'k-unans');
+    warn.innerHTML = `<b>Wajib jawab semua soal.</b> Belum dijawab: `;
+    const chips = el('span', 'k-unans-chips');
+    unanswered.forEach((k) => {
+      const c = el('button', 'k-unans-chip'); c.type = 'button'; c.textContent = k + 1;
+      c.addEventListener('click', () => { state.idx = k; screenQuiz(); });
+      chips.appendChild(c);
+    });
+    warn.appendChild(chips);
+    wrap.appendChild(warn);
+  }
   app.appendChild(wrap);
   window.scrollTo(0, 0);
 }
 
 // ---------- layar hasil ----------
-function screenResult() {
+async function screenResult() {
   const total = QUESTIONS.length;
   let benar = 0;
   QUESTIONS.forEach((Q, i) => { if (state.answers[i] === Q.correct) benar++; });
-  const nilai = benar * POINTS_PER;
-  const salah = total - benar;
+  const nilai = benar * POINTS_PER, salah = total - benar;
+  const durasi = state.startedAt ? Math.round((Date.now() - state.startedAt) / 1000) : null;
   const grade = nilai >= 85 ? { t: "Sangat Baik", c: "#1f9c4d" } : nilai >= 70 ? { t: "Baik", c: "#1f6fd0" }
     : nilai >= 55 ? { t: "Cukup", c: "#c78a00" } : { t: "Perlu Belajar Lagi", c: "#e23c3c" };
 
+  // simpan ke Supabase (tak menghalangi tampilan hasil)
+  const savePromise = saveResult({
+    nama: state.nama, kelas: state.kelas, sekolah: state.sekolah,
+    jawaban: state.answers, benar, salah, nilai, jumlah_soal: total, durasi_detik: durasi,
+  });
+
   app.innerHTML = "";
   const wrap = el('div', 'k-wrap');
-
   const head = el('div', 'k-card k-result');
   head.innerHTML = `
-    <div class="k-rident">${escapeHtml(state.name)} · <span>${escapeHtml(state.kelas)}</span></div>
+    <div class="k-rident">${escapeHtml(state.nama)} · <span>${escapeHtml(state.kelas)} · ${escapeHtml(state.sekolah)}</span></div>
     <div class="k-score">
       <div class="k-ring" style="--v:${nilai};--gc:${grade.c}"><div class="k-ring-in"><b>${nilai}</b><small>/100</small></div></div>
       <div class="k-scoremeta">
         <div class="k-grade" style="color:${grade.c}">${grade.t}</div>
         <div class="k-benar">Benar <b>${benar}</b> dari ${total} · Salah <b>${salah}</b></div>
         <div class="k-rule">Tiap soal benar = ${POINTS_PER} poin</div>
+        <div class="k-save" id="k-save">Menyimpan hasil…</div>
       </div>
     </div>
     <div class="k-ractions">
@@ -276,15 +294,12 @@ function screenResult() {
   const rev = el('div', 'k-review');
   rev.innerHTML = `<h2 class="k-revh">Pembahasan</h2><p class="k-revsub">Jawaban salah ditandai merah beserta kunci &amp; penjelasannya.</p>`;
   QUESTIONS.forEach((Q, i) => {
-    const ua = state.answers[i];
-    const ok = ua === Q.correct;
+    const ua = state.answers[i], ok = ua === Q.correct;
     const item = el('div', 'k-ritem ' + (ok ? 'is-ok' : 'is-no'));
     const fig = Q.fig ? `<div class="k-fig k-fig-sm">${FIG[Q.fig]}</div>` : "";
     let html = `<div class="k-rq"><span class="k-rmark">${ok ? '✓' : '✕'}</span><span><b>Soal ${i + 1}.</b> ${Q.q}</span></div>${fig}<ul class="k-ropts">`;
     Q.opts.forEach((o, k) => {
-      let cls = "";
-      if (k === Q.correct) cls = "k-correct";
-      else if (k === ua) cls = "k-wrong";
+      let cls = k === Q.correct ? "k-correct" : (k === ua ? "k-wrong" : "");
       const tag = k === Q.correct ? ' <em>(kunci)</em>' : (k === ua && !ok ? ' <em>(jawabanmu)</em>' : '');
       html += `<li class="${cls}"><span class="k-optl">${LETTERS[k]}</span> ${o}${tag}</li>`;
     });
@@ -298,9 +313,14 @@ function screenResult() {
   app.appendChild(wrap);
   window.scrollTo(0, 0);
   document.getElementById('k-again').addEventListener('click', screenStart);
-}
 
-function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+  // status simpan
+  const saveEl = document.getElementById('k-save');
+  const res = await savePromise;
+  if (res.ok) saveEl.innerHTML = '<span class="k-save-ok">✓ Hasil tersimpan</span>';
+  else if (res.skipped) saveEl.style.display = 'none'; // belum dikonfigurasi (mode uji)
+  else saveEl.innerHTML = '<span class="k-save-no">⚠ Gagal menyimpan (nilai tetap tampil)</span>';
+}
 
 // ---------- mulai ----------
 screenStart();
