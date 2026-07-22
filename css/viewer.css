@@ -135,7 +135,7 @@ a.v-btn { text-decoration: none; }
 @keyframes vspin { to { transform: rotate(360deg); } }
 
 /* ============ AR (kamera) ============ */
-.ar-root, .ar-container { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; background: #05070c; }
+.ar-root, .ar-container { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; background: #05070c; touch-action: none; overscroll-behavior: none; }
 .ar-container video, .ar-container canvas {
   position: absolute !important; top: 0 !important; left: 0 !important;
   width: 100% !important; height: 100% !important; object-fit: cover !important; margin: 0 !important;

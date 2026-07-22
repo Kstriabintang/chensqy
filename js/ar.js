@@ -201,7 +201,7 @@ async function initAR() {
   window.addEventListener('resize', sizeRenderers);
   window.addEventListener('orientationchange', () => setTimeout(sizeRenderers, 250));
   startQRLoop();
-  enableDragRotate();
+  enableManipulation();
   [hint, dock].forEach((n) => n.style.display = '');
   if (activeSlug) preselectChip(activeSlug);
 }
@@ -229,12 +229,13 @@ async function placeMarkerless(slug, byUser) {
   const inst = await instantiate(slug, { size: 1.4, sit: false });
   placedInst = inst;
   placedHolder.rotation.set(0, 0, 0);
+  placedHolder.scale.setScalar(1); // reset zoom tiap taruh objek baru
   placedHolder.add(inst.root);
   placedHolder.visible = true;
   popIn(inst.root);
   setActive(slug);
   hideHint();
-  showToast((byUser ? 'Ditaruh: ' : 'QR terdeteksi: ') + MATERI[slug].short);
+  showToast((byUser ? '' : 'QR terdeteksi: ') + MATERI[slug].short + ' — cubit untuk zoom, geser untuk putar');
 }
 function removeMixer(mx) { const i = mixers.indexOf(mx); if (i >= 0) mixers.splice(i, 1); }
 
@@ -244,19 +245,54 @@ container.addEventListener('click', (e) => {
   if (!placedInst && activeSlug) placeMarkerless(activeSlug, true);
 });
 
-// putar objek markerless dgn drag
-function enableDragRotate() {
-  let down = false, px = 0, py = 0;
+// putar (1 jari / drag) + zoom (cubit / roda) objek markerless.
+// Juga MENCEGAH gestur bawaan browser (yang tadi membuka tab saat pinch).
+const S_MIN = 0.35, S_MAX = 3.2;
+function scaleHolderBy(f) {
+  const s = Math.max(S_MIN, Math.min(S_MAX, placedHolder.scale.x * f));
+  placedHolder.scale.setScalar(s);
+}
+function enableManipulation() {
   const dom = renderer.domElement;
-  dom.addEventListener('pointerdown', (e) => { if (!placedHolder.visible) return; down = true; px = e.clientX; py = e.clientY; });
-  window.addEventListener('pointerup', () => { down = false; });
-  window.addEventListener('pointermove', (e) => {
+  const dist = (t) => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+  let mode = null, lastX = 0, lastY = 0, lastDist = 0;
+  // --- sentuh (HP): 1 jari putar, 2 jari cubit-zoom ---
+  dom.addEventListener('touchstart', (e) => {
+    if (!placedHolder.visible) return;
+    if (e.touches.length === 1) { mode = 'rot'; lastX = e.touches[0].clientX; lastY = e.touches[0].clientY; }
+    else if (e.touches.length >= 2) { mode = 'pinch'; lastDist = dist(e.touches); if (e.cancelable) e.preventDefault(); }
+  }, { passive: false });
+  dom.addEventListener('touchmove', (e) => {
+    if (!placedHolder.visible) return;
+    if (e.cancelable) e.preventDefault(); // cegah zoom-halaman / buka-tab browser
+    if (mode === 'rot' && e.touches.length === 1) {
+      const t = e.touches[0];
+      placedHolder.rotation.y += (t.clientX - lastX) * 0.01;
+      placedHolder.rotation.x = Math.max(-1.2, Math.min(1.2, placedHolder.rotation.x + (t.clientY - lastY) * 0.006));
+      lastX = t.clientX; lastY = t.clientY;
+    } else if (mode === 'pinch' && e.touches.length >= 2) {
+      const d = dist(e.touches); if (lastDist) scaleHolderBy(d / lastDist); lastDist = d;
+    }
+  }, { passive: false });
+  dom.addEventListener('touchend', (e) => {
+    if (e.touches.length === 0) mode = null;
+    else if (e.touches.length === 1) { mode = 'rot'; lastX = e.touches[0].clientX; lastY = e.touches[0].clientY; }
+  });
+  // --- mouse (desktop): geser putar, roda zoom ---
+  let down = false, px = 0, py = 0;
+  dom.addEventListener('mousedown', (e) => { if (!placedHolder.visible) return; down = true; px = e.clientX; py = e.clientY; });
+  window.addEventListener('mouseup', () => { down = false; });
+  window.addEventListener('mousemove', (e) => {
     if (!down) return;
     placedHolder.rotation.y += (e.clientX - px) * 0.01;
-    placedHolder.rotation.x += (e.clientY - py) * 0.006;
+    placedHolder.rotation.x = Math.max(-1.2, Math.min(1.2, placedHolder.rotation.x + (e.clientY - py) * 0.006));
     px = e.clientX; py = e.clientY;
   });
+  dom.addEventListener('wheel', (e) => { if (!placedHolder.visible) return; e.preventDefault(); scaleHolderBy(e.deltaY < 0 ? 1.08 : 0.93); }, { passive: false });
 }
+// blok pinch-zoom & gestur bawaan browser/in-app (iOS Safari + WebView) di mode AR
+['gesturestart', 'gesturechange', 'gestureend'].forEach((ev) =>
+  document.addEventListener(ev, (e) => e.preventDefault(), { passive: false }));
 
 // ---------- jsQR ----------
 const qCanvas = document.createElement('canvas');
@@ -345,7 +381,8 @@ function fail(msg) {
 }
 
 // hook verifikasi (tak mengganggu pengguna)
-window.__arDebug = { placeMarkerless, matchQR, get mixers() { return mixers; }, get scene() { return scene; }, get activeSlug() { return activeSlug; } };
+window.__arDebug = { placeMarkerless, matchQR, get mixers() { return mixers; }, get scene() { return scene; }, get activeSlug() { return activeSlug; },
+  get placedScale() { return placedHolder ? +placedHolder.scale.x.toFixed(3) : null; }, get placedRotY() { return placedHolder ? +placedHolder.rotation.y.toFixed(3) : null; } };
 
 // ---------- mulai ----------
 start.querySelector('.ar-start-btn').addEventListener('click', () => {
