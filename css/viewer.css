@@ -222,5 +222,5 @@ a.v-btn { text-decoration: none; }
   .v-toolbar:not(.ar-toolbar) { top: auto; bottom: calc(max(12px, env(safe-area-inset-bottom)) + 4px); right: 10px; transform: none; flex-direction: row; }
   .v-btn { width: 44px; height: 44px; }
   .v-panel:not(.ar-sheet) { left: 10px; right: 10px; width: auto; bottom: calc(max(12px, env(safe-area-inset-bottom)) + 62px); }
-  .v-panel:not(.ar-sheet) .v-panel-body { max-height: 34vh; }
+  .v-panel:not(.ar-sheet):not(.is-collapsed) .v-panel-body { max-height: 34vh; }
 }

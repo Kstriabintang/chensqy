@@ -45,6 +45,8 @@ function renderSpeed() { btnSpeed.textContent = fmtSpeed(speed); }
 renderSpeed();
 
 const panel = buildPanel(CFG);
+// Di HP, mulai tertutup agar model 3D tidak tertutupi panel (ketuk "Keterangan" untuk buka).
+if (window.matchMedia && window.matchMedia('(max-width: 640px)').matches) panel.classList.add('is-collapsed');
 
 const loading = el('div', 'v-loading');
 loading.innerHTML = '<div class="v-spin"></div><span>Memuat model 3D…</span>';
